@@ -1,0 +1,13 @@
+--- 
+hearts_001: 
+  heartable_type: Issue
+  heartable_id: 2
+  user_id: 3
+hearts_002: 
+  heartable_type: Message
+  heartable_id: 1
+  user_id: 1
+hearts_003: 
+  heartable_type: Issue
+  heartable_id: 2
+  user_id: 1

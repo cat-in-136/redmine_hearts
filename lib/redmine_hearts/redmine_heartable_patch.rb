@@ -17,15 +17,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-require_dependency 'redmine_hearts/acts_as_heartable.rb'
-require_dependency 'redmine_hearts/redmine_heartable_patch.rb'
-
-Redmine::Plugin.register :redmine_hearts do
-  name 'Redmine Hearts plugin'
-  author '@cat_in_136'
-  description 'provide intra-Redmine Like/Fav reactions'
-  version '0.0.0'
-  url 'https://github.com/cat-in-136/redmine_hearts'
-  author_url 'https://github.com/cat-in-136/'
+module RedmineHeartablePatch
+  def self.included(base) # :nodoc:
+    base.class_eval do
+      unloadable
+      acts_as_heartable
+    end
+  end
 end
 
+Board.send(:include, RedmineHeartablePatch)
+Issue.send(:include, RedmineHeartablePatch)
+Message.send(:include, RedmineHeartablePatch)
+News.send(:include, RedmineHeartablePatch)
+Wiki.send(:include, RedmineHeartablePatch)
+WikiPage.send(:include, RedmineHeartablePatch)
