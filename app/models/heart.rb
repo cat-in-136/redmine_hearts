@@ -2,6 +2,7 @@
 #
 # Redmine Hearts plugin
 # Copyright (C) @cat_in_136
+# Copyright (C) 2006-2017  Jean-Philippe Lang (Almost-all method code are copied from redmine)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,12 +18,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-Redmine::Plugin.register :redmine_hearts do
-  name 'Redmine Hearts plugin'
-  author '@cat_in_136'
-  description 'provide intra-Redmine Like/Fav reactions'
-  version '0.0.0'
-  url 'https://github.com/cat-in-136/redmine_hearts'
-  author_url 'https://github.com/cat-in-136/'
-end
+class Heart < ActiveRecord::Base
+  unloadable
 
+  belongs_to :heartable, :polymorphic => true
+  belongs_to :user
+
+  validates :heartable, :presence => true
+end
