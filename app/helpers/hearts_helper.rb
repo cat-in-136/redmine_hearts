@@ -26,7 +26,7 @@ module HeartsHelper
 
     heart_bool = user && user.logged? && Heart.any_hearted?(objects, user)
     css = heart_bool ? 'icon icon-heart' : 'icon icon-heart-off'
-    text = "Like" # TODO i18n
+    text = l(:hearts_link_label)
     url = heart_url(
       :object_type => objects.first.class.to_s.underscore,
       :object_id => (objects.size == 1 ? objects.first.id : objects.map(&:id).sort)
