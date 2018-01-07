@@ -1,6 +1,3 @@
 <%# frozen_string_literal: true %>
-<span class="heart-field">
-<% css = "icon icon-heart" # "icon icon-heart-off" %>
-<%=link_to "Like", "javascript:void(0);", :remote => true, :class => css %><%# TODO %>
-<%= @subject.hearts.count %>
-</span>
+<% self.class.send :include, HeartsHelper %>
+<%= heart_link_with_counter @heartable, User.current %>

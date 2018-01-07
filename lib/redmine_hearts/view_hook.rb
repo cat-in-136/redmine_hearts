@@ -20,28 +20,28 @@ class RedmineViewHookForDevHook < Redmine::Hook::ViewListener
 
   def view_layouts_base_html_head(context={})
     controller = context[:controller]
-    subject = heart_subject(controller)
+    subject = heartable_subject(controller)
     if subject
       controller.send(:render_to_string, {
         :partial => "hooks/redmine_hearts/view_layouts_base_html_head",
-        :locals => context.merge(:@subject => subject)
+        :locals => context.merge(:@heartable => subject)
       })
     end
   end
 
   def view_layouts_base_content(context={})
     controller = context[:controller]
-    subject = heart_subject(controller)
+    subject = heartable_subject(controller)
     if subject
       controller.send(:render_to_string, {
         :partial => "hooks/redmine_hearts/view_layouts_base_content",
-        :locals => context.merge(:@subject => subject)
+        :locals => context.merge(:@heartable => subject)
       })
     end
   end
 
   private
-  def heart_subject(controller)
+  def heartable_subject(controller)
     subject = nil
     if (controller && (controller.action_name == 'show'))
       model_klass = controller.controller_name.classify.safe_constantize

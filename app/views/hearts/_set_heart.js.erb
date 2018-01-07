@@ -1,0 +1,3 @@
+<%# frozen_string_literal: true %>
+<% selector = ".#{heart_css(hearted)}" %>
+$("<%= selector %>").each(function(){$(this).replaceWith("<%= escape_javascript heart_link_with_counter(hearted, user) %>")});
