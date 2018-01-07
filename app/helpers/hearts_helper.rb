@@ -33,7 +33,7 @@ module HeartsHelper
     )
     method = heart_bool ? 'delete' : 'post'
 
-    content_tag :span, :class => heart_css(objects) do
+    content_tag :span, :class => [heart_css(objects), 'heart-link-with-count'].join(' ') do
       html = String.new
       if user && user.logged?
         html << link_to(text, url, :remote => true, :method => method, :class => css)
