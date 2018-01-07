@@ -4,4 +4,5 @@
 Rails.application.routes.draw do
   post 'hearts/heart', :to => 'hearts#heart', :as => 'heart'
   delete 'hearts/heart', :to => 'hearts#unheart'
+  get 'hearts/hearted_users', :to => 'hearts#hearted_users'
 end

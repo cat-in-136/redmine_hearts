@@ -1,3 +1,4 @@
 # Japanese strings go here for Rails i18n
 ja:
-  hearts_link_label: いいね
+  hearts_link_label: いいね!
+  hearts_count_label: "いいね! %{count}件"

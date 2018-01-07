@@ -1,3 +1,7 @@
 # English strings go here for Rails i18n
 en:
   hearts_link_label: Like
+  hearts_count_label: 
+    zero: "Not liked yet"
+    one: "%{count} Like"
+    other: "%{count} Likes"

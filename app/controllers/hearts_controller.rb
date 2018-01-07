@@ -2,7 +2,7 @@
 #
 # Redmine Hearts plugin
 # Copyright (C) @cat_in_136
-# Copyright (C) 2006-2017  Jean-Philippe Lang (Almost-all method code are copied from redmine)
+# Copyright (C) 2006-2017  Jean-Philippe Lang (Almost-all method code except for hearted_users are copied from redmine)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 class HeartsController < ApplicationController
   unloadable
 
-  before_action :require_login, :find_heartables, :only => [:heart, :unheart]
+  before_action :require_login, :find_heartables, :only => [:heart, :unheart, :hearted_users]
 
   def heart
     set_heart(@heartables, User.current, true)
@@ -28,6 +28,14 @@ class HeartsController < ApplicationController
 
   def unheart
     set_heart(@heartables, User.current, false)
+  end
+
+  def hearted_users
+    respond_to do |format|
+      format.html {
+        render :hearted_users
+      }
+    end
   end
 
   private

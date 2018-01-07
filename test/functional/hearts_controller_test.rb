@@ -2,7 +2,7 @@
 #
 # Redmine Hearts plugin
 # Copyright (C) @cat_in_136
-# Copyright (C) 2006-2017  Jean-Philippe Lang (Almost-all method code are copied from redmine)
+# Copyright (C) 2006-2017  Jean-Philippe Lang (Almost-all method code except for hearted_users are copied from redmine)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -87,6 +87,22 @@ class HeartsControllerTest < ActionController::TestCase
       assert_include '$(".issue-2-heart")', response.body
     end
     refute Issue.find(2).hearted_by?(User.find(3))
+  end
+
+  def test_hearted_users_non_liked_object
+    @request.session[:user_id] = 3
+    get :hearted_users, :object_type => 'issue', :object_id => '1'
+    assert_response :success
+    assert_select '#content h3', {:text => "Not liked yet"}
+    assert_select '#content ul', {:count => 0}
+  end
+
+  def test_hearted_users_liked_object
+    @request.session[:user_id] = 3
+    get :hearted_users, :object_type => 'issue', :object_id => '2'
+    assert_response :success
+    assert_select '#content h3', {:text => "2 Likes"}
+    assert_select '#content ul li', {:count => 2}
   end
 
 end

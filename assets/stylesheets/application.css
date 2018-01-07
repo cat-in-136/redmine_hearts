@@ -1,4 +1,15 @@
 .icon-heart  { background-image: url(../images/heart.png); }
 .icon-heart-off  { background-image: url(../images/heart_off.png); }
 
+.heart-link-with-count { display: inline-block; }
 .heart-count-number { padding-left: 1ex; }
+
+@media screen and (max-width: 899px) {
+  .heart-link-with-count > *:nth-child(1) {
+    margin-right: 0 !important;
+  }
+  .heart-link-with-count > *:nth-child(2) {
+    margin-left: 0 !important;
+    border-left: 0 !important;
+  }
+}
