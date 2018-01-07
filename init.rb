@@ -19,6 +19,7 @@
 
 require_dependency 'redmine_hearts/acts_as_heartable.rb'
 require_dependency 'redmine_hearts/redmine_heartable_patch.rb'
+require_dependency 'redmine_hearts/view_hook.rb'
 
 Redmine::Plugin.register :redmine_hearts do
   name 'Redmine Hearts plugin'
