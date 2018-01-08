@@ -73,6 +73,8 @@ module HeartsHelper
         ": ",
         link_to("##{object.issue.id}#note-#{journal_indice}", "#{issue_url(object.issue)}#note-#{journal_indice}"),
       ].join("").html_safe
+    when WikiPage
+      link_to h(object.title), object
     else
       link_to h(object.to_s), object
     end
