@@ -28,5 +28,7 @@ Redmine::Plugin.register :redmine_hearts do
   version '0.0.0'
   url 'https://github.com/cat-in-136/redmine_hearts'
   author_url 'https://github.com/cat-in-136/'
+
+  menu :application_menu, :hearts, {:controller => :hearts, :action => :index}, :caption => :hearts_link_label
 end
 
