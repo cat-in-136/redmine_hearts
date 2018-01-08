@@ -20,7 +20,7 @@ $(function() {
 
     // append to contextual within the corresponding items.
     if (num_insert === 0) {
-      num_insert += $(link).appendTo("." + heartable_subject + " .contextual").length;
+      num_insert += $(link).appendTo("#" + heartable_subject + " .contextual").length;
     }
 
     // append to contextual of the children of the content.

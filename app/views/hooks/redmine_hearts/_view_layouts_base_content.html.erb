@@ -1,3 +1,11 @@
 <%# frozen_string_literal: true %>
 <% self.class.send :include, HeartsHelper %>
-<%= heart_link_with_counter @heartable, User.current %>
+<% case @heartable %>
+<% when Message %>
+  <%= heart_link_with_counter @heartable, User.current %>
+  <% @heartable.children.each do |reply| %>
+    <%= heart_link_with_counter reply, User.current %>
+  <% end %>
+<% else %>
+  <%= heart_link_with_counter @heartable, User.current %>
+<% end %>
