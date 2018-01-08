@@ -60,10 +60,12 @@ module HeartsHelper
 
   def link_to_heartable(object)
     case object
-    when Message
-      link_to_message object
     when Issue
       link_to_issue object
+    when Message
+      link_to_message object
+    when News
+      link_to h(object.title), news_url(object)
     when Journal
       journal_indice = object.issue.journals.ids.index(object.id) + 1 # TODO more better query wanted
       [
@@ -72,7 +74,7 @@ module HeartsHelper
         link_to("##{object.issue.id}#note-#{journal_indice}", "#{issue_url(object.issue)}#note-#{journal_indice}"),
       ].join("").html_safe
     else
-      link_to object.to_s, object
+      link_to h(object.to_s), object
     end
   end
 end
