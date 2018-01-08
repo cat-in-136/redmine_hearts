@@ -1,10 +1,6 @@
 <%# frozen_string_literal: true %>
 <% @heartables.each do |heartable| %>
-  <% if heartable.is_a?(Message) %><%# use link_to_message since message_url missing %>
-    <h2><%= link_to_message heartable %></h2>
-  <% else %>
-    <h2><%= link_to h(heartable.to_s), heartable %></h2>
-  <% end %>
+  <h2><%= link_to_heartable heartable %></h2>
   <% hearted_users = heartable.hearted_users %>
   <h3><%=t :hearts_count_label, :count => hearted_users.size %></h3>
   <%= content_tag :ul do %>

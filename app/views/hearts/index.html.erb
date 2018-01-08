@@ -21,11 +21,7 @@
       <p>
         <%= avatar(heart.user, :size => "24") %>
         <%= link_to_project(heartable.project) + ": " %>
-        <% if heartable.is_a?(Message) %><%# use link_to_message since message_url missing %>
-          <%= link_to_message heartable %>
-        <% else %>
-          <%= link_to h(heartable.to_s), heartable %>
-        <% end %>
+        <%= link_to_heartable heartable %>
       </p>
       <p class="author"><%= authoring heart.created_at, heart.user %></p>
     </li>

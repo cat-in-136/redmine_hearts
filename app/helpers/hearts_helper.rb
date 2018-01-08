@@ -57,4 +57,15 @@ module HeartsHelper
     id = (objects.size == 1 ? objects.first.id : 'bulk')
     "#{objects.first.class.to_s.underscore}-#{id}-heart"
   end
+
+  def link_to_heartable(object)
+    case object
+    when Message
+      link_to_message object
+    when Issue
+      link_to_issue object
+    else
+      link_to object.to_s, object
+    end
+  end
 end
