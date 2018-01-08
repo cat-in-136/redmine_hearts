@@ -1,0 +1,37 @@
+<%# frozen_string_literal: true %>
+
+<div class="contextual">
+  <%= form_tag({}, :method => :get) do %>
+    <label for="including_myself">
+      <%= check_box_tag 'including_myself', 1, params[:including_myself], :onchange => "this.form.submit();" %>
+      <%=l :including_hearted_myself %>
+    </label>
+  <% end %>
+</div>
+
+<h2><%= l(:recently_hearted_objects) %></h2>
+
+<% if @hearts.empty? %>
+  <p class="nodata"><%=l :label_no_data %></p>
+<% else %>
+  <ul>
+  <% @hearts.each do |heart| %>
+    <li>
+      <% heartable = heart.heartable %>
+      <p>
+        <%= avatar(heart.user, :size => "24") %>
+        <%= link_to_project(heartable.project) + ": " %>
+        <% if heartable.is_a?(Message) %><%# use link_to_message since message_url missing %>
+          <%= link_to_message heartable %>
+        <% else %>
+          <%= link_to h(heartable.to_s), heartable %>
+        <% end %>
+      </p>
+      <p class="author"><%= authoring heart.created_at, heart.user %></p>
+    </li>
+  <% end %>
+  </ul>
+  <span class="pagination"><%= pagination_links_full @hearts_pages %></span>
+<% end %>
+
+<% html_title(l(:recently_hearted_objects)) %>

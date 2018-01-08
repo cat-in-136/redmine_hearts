@@ -1,5 +1,7 @@
 # English strings go here for Rails i18n
 en:
+  recently_hearted_objects: Recently Liked
+  including_hearted_myself: Include liked by myself
   hearts_link_label: Like
   hearts_count_label: 
     zero: "Not liked yet"

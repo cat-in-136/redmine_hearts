@@ -20,6 +20,26 @@
 class HeartsController < ApplicationController
   unloadable
 
+  def index
+    @limit = 25
+
+    scope = Heart.all
+    @scope_count = scope.count
+    @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
+    @offset ||= @hearts_pages.offset
+
+    scope = scope.where.not(:user => User.current) unless params["including_myself"]
+
+    @hearts = scope.order(:created_at => :desc).
+      limit(@limit).
+      offset(@offset).
+      to_a
+
+    respond_to do |format|
+      format.html
+    end
+  end
+
   before_action :require_login, :find_heartables, :only => [:heart, :unheart, :hearted_users]
 
   def heart
