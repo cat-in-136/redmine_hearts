@@ -32,3 +32,5 @@ Message.send(:include, RedmineHeartablePatch)
 News.send(:include, RedmineHeartablePatch)
 Wiki.send(:include, RedmineHeartablePatch)
 WikiPage.send(:include, RedmineHeartablePatch)
+
+Journal.send(:include, RedmineHeartablePatch)

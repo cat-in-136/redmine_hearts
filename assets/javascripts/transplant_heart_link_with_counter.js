@@ -32,4 +32,19 @@ $(function() {
       console.debug("Failed to transplant : ." + heartable_subject + "-heart");
     }
   });
+  $("#history > .journal + .heart-link-with-count").each(function () {
+    let link = this;
+    let num_insert = 0;
+    if (num_insert === 0) {
+      num_insert += $(link).insertBefore($(".contextual > :first-child", $(link).prev())).length;
+    }
+    if (num_insert === 0) {
+      num_insert += $(link).appendTo($(link).prev()).length;
+      if (num_insert > 0) { $(link).wrap('<div class="contextual"></div>'); }
+    }
+
+    if (num_insert === 0) {
+      console.debug("Failed to transplant : " + link);
+    }
+  });
 });
