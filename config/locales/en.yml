@@ -2,6 +2,7 @@
 en:
   recently_hearted_objects: Recently Liked
   including_hearted_myself: Include liked by myself
+  label_hearted_time_by: "Liked by %{author} %{age} ago"
   hearts_link_label: Like
   hearts_count_label: 
     zero: "Not liked yet"

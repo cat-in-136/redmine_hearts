@@ -19,11 +19,13 @@
     <li>
       <% heartable = heart.heartable %>
       <p>
-        <%= avatar(heart.user, :size => "24") %>
         <%= link_to_project(heartable.project) + ": " %>
         <%= link_to_heartable heartable %>
       </p>
-      <p class="author"><%= authoring heart.created_at, heart.user %></p>
+      <p class="author">
+        <%= avatar(heart.user, :size => "24") %>
+        <%= authoring heart.created_at, heart.user, :label => :label_hearted_time_by %>
+      </p>
     </li>
   <% end %>
   </ul>

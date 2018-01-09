@@ -2,5 +2,6 @@
 ja:
   recently_hearted_objects: 最近いいね!された
   including_hearted_myself: 自分自身のいいね!も含める
+  label_hearted_time_by: "%{author}が%{age}前にいいね!しました"
   hearts_link_label: いいね!
   hearts_count_label: "いいね! %{count}件"

@@ -6,7 +6,7 @@
     <% heartable.hearts.each do |heart| %>
       <%= content_tag :li, :class => "user-#{heart.user.id}" do %>
         <%= avatar(heart.user, :size => 16).to_s %>
-        <%= authoring heart.created_at, heart.user %>
+        <%= authoring heart.created_at, heart.user, :label => :label_hearted_time_by %>
       <% end %>
     <% end %>
   <% end if heartable.hearted_users.size > 0 %>
