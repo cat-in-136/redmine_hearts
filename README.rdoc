@@ -2,6 +2,8 @@
 
 Redmine Hearts is a plugin which provides intra-Redmine Like/Fav reactions.
 
+{<img src="https://travis-ci.org/cat-in-136/redmine_hearts.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/cat-in-136/redmine_hearts]
+
 == How to install
 
 * Download the plugin to your 'plugins/' directory
