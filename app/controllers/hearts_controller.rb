@@ -30,10 +30,11 @@ class HeartsController < ApplicationController
 
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
 
-    @hearts = scope.order(:created_at => :desc).
+    @heartables = scope.group(:heartable_type, :heartable_id).
+      order(:created_at => :desc).
       limit(@limit).
       offset(@offset).
-      to_a
+      map(&:heartable)
 
     respond_to do |format|
       format.html

@@ -46,13 +46,12 @@ class HeartsControllerTest < ActionController::TestCase
     @request.session[:user_id] = 3
     get :index, :including_myself => true
     assert_response :success
-    assert_select '#content > ul > li', {:count => 3}
+    assert_select '#content > ul > li', {:count => 2}
     assert_select '#content > ul > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(1) a[href="/users/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(2) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(3) a[href="/issues/2"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(3) a[href="/users/1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(2) a[href="/users/1"]', {:count => 1}
   end
 
   def test_heart_a_single_object_as_html
