@@ -42,6 +42,27 @@ class HeartsController < ApplicationController
     end
   end
 
+  before_action :require_login, :find_user, :only => [:hearted_by]
+
+  def hearted_by
+    @offset, @limit = api_offset_and_limit
+
+    scope = Heart.where(:user => @user)
+    @scope_count = scope.count
+    @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
+    @offset ||= @hearts_pages.offset
+
+    @hearts = scope.
+      order(:created_at => :desc).
+      limit(@limit).
+      offset(@offset).
+      includes(:heartable)
+
+    respond_to do |format|
+      format.html
+    end
+  end
+
   before_action :require_login, :find_heartables, :only => [:heart, :unheart, :hearted_users]
 
   def heart
@@ -126,5 +147,12 @@ class HeartsController < ApplicationController
       end
     end
     objects
+  end
+
+  def find_user
+    @user = User.find(params[:user_id]) rescue nil
+    unless @user.present?
+      render_404
+    end
   end
 end

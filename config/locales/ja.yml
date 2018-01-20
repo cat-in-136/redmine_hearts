@@ -1,7 +1,9 @@
 # Japanese strings go here for Rails i18n
 ja:
   recently_hearted_objects: 最近いいね!された
+  recently_hearted_by: "%{author}が最近いいね!した"
   including_hearted_myself: 自分自身のいいね!も含める
+  label_hearted_time: "%{age}前にいいね!しました"
   label_hearted_time_by: "%{author}が%{age}前にいいね!しました"
   hearts_link_label: いいね!
   hearts_count_label: "いいね! %{count}件"

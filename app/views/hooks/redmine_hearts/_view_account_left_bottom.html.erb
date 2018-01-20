@@ -1,0 +1,5 @@
+<%# frozen_string_literal: true %>
+<h3><%= l :hearts_link_label %></h3>
+<div>
+  <%= link_to(t(:hearts_count_label, :count => @heart_count), :controller => :hearts, :action => :hearted_by, :user_id => @user.id) %>
+</div>

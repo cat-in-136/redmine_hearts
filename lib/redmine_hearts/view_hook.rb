@@ -48,6 +48,17 @@ class RedmineViewHookForDevHook < Redmine::Hook::ViewListener
     })
   end
 
+  def view_account_left_bottom(context={})
+    heart_count = Heart.where(:user => context[:user]).count
+    if heart_count > 0
+      controller = context[:controller]
+      controller.send(:render_to_string, {
+        :partial => "hooks/redmine_hearts/view_account_left_bottom",
+        :locals => context.merge(:@heart_count => heart_count)
+      })
+    end
+  end
+
   private
   def heartable_subject(controller)
     subject = nil

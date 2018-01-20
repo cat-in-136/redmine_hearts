@@ -1,0 +1,20 @@
+<%# frozen_string_literal: true %>
+
+<h2><%= l(:recently_hearted_by, :author => link_to_user(@user)).html_safe %></h2>
+
+<% if @hearts.empty? %>
+  <p class="nodata"><%=l :label_no_data %></p>
+<% else %>
+  <ul>
+  <% @hearts.each do |heart| %>
+    <li>
+      <%= link_to_heartable heart.heartable %>
+      <div><%= l(:label_hearted_time, :age => time_tag(heart.created_at)).html_safe %></div>
+    </li>
+  <% end %>
+  </ul>
+  <span class="pagination"><%= pagination_links_full @hearts_pages %></span>
+<% end %>
+
+
+<% html_title(t(:recently_hearted_by, :author => @user.name)) %>

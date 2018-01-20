@@ -1,7 +1,9 @@
 # English strings go here for Rails i18n
 en:
   recently_hearted_objects: Recently Liked
+  recently_hearted_by: "Recently Liked by %{author}"
   including_hearted_myself: Include liked by myself
+  label_hearted_time: "Liked %{age} ago"
   label_hearted_time_by: "Liked by %{author} %{age} ago"
   hearts_link_label: Like
   hearts_count_label: 
