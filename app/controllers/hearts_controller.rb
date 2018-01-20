@@ -21,7 +21,7 @@ class HeartsController < ApplicationController
   unloadable
 
   def index
-    @limit = 25
+    @offset, @limit = api_offset_and_limit
 
     scope = Heart.all
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
