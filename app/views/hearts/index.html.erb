@@ -20,8 +20,10 @@
       <p>
         <%= link_to_project(heartable.project) + ": " %>
         <%= link_to_heartable heartable %>
-        <%= heart_link_with_counter heartable, User.current %>
       </p>
+      <div>
+        <%= heart_link_with_counter heartable, User.current %>
+      </div>
       <ul>
         <% hearts = heartable.hearts.order(:created_at => :desc) %>
         <% hearts = hearts.where.not(:user => User.current) unless params["including_myself"] %>
@@ -39,3 +41,6 @@
 <% end %>
 
 <% html_title(l(:recently_hearted_objects)) %>
+<% content_for :header_tags do %>
+  <%= render :partial => "hearts/heart_link_with_counter" %>
+<% end %>
