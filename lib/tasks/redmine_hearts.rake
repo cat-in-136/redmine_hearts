@@ -82,4 +82,33 @@ namespace :redmine_hearts do
     puts "#{num_of_vote_added} #{(num_of_vote_added > 1)? 'vote'.pluralize : 'vote'} added."
   end
 
+  desc "Migrate to vote_on_issues plugin from hearts"
+  task :migrate_to_vote_on_issues => :environment do
+    abort "vote_on_issues does not installed" unless Redmine::Plugin.installed?(:vote_on_issues)
+
+    num_of_vote_on_issues_before_processing = VoteOnIssue.count
+
+    Heart.where(:heartable_type => Issue).each do |heart|
+      user = heart.user
+      issue = heart.heartable
+      created_at = heart.created_at
+
+      if VoteOnIssue.where(:issue => issue, :user => user).exists?
+        # do nothing if already voted
+      else
+        VoteOnIssue.create!(
+          :user => user,
+          :issue => issue,
+          :vote_val => 1,
+          :created_at => created_at,
+          :updated_at => created_at,
+        )
+      end
+    end
+
+    num_of_vote_on_issue_added = VoteOnIssue.count - num_of_vote_on_issues_before_processing
+
+    puts "#{num_of_vote_on_issue_added} #{(num_of_vote_on_issue_added > 1)? 'vote'.pluralize : 'vote'} added."
+  end
+
 end
