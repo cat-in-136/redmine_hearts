@@ -52,6 +52,46 @@ module HeartsHelper
     end
   end
 
+  def multiple_heart_links_with_counters(objects, user)
+    return [] unless objects.any?
+
+    hearted_by_user = Heart.where(:heartable => objects, :user => user).
+      pluck(:heartable_type, :heartable_id)
+    hearted_users_counts = Heart.where(:heartable => objects).
+      group(:heartable_type, :heartable_id).
+      count
+
+    objects.map.with_index do |object, i|
+      object_type_and_id = [object.class.to_s, object.id]
+      heart_bool = hearted_by_user.include?(object_type_and_id)
+      hearted_users_count = hearted_users_counts[object_type_and_id] || 0
+
+      css = heart_bool ? 'icon icon-heart' : 'icon icon-heart-off'
+      text = l(:hearts_link_label)
+      url = heart_url(
+        :object_type => object_type_and_id[0].underscore,
+        :object_id => object_type_and_id[1],
+      )
+      method = heart_bool ? 'delete' : 'post'
+      hearted_users_url = hearts_hearted_users_url(
+        :object_type => object_type_and_id[0].underscore,
+        :object_id => object_type_and_id[1],
+      )
+
+      content_tag :span, :class => [heart_css(object), 'heart-link-with-count'].join(' ') do
+        html = String.new
+        if user && user.logged?
+          html << link_to(text, url, :remote => true, :method => method, :class => css)
+          html << link_to(hearted_users_count.to_s, hearted_users_url, :class => 'heart-count-number')
+        else
+          html << content_tag(:span, text, :class => css)
+          html << content_tag(:span, hearted_users_count.to_s, :class => 'heart-count-number')
+        end
+        html.html_safe
+      end
+    end
+  end
+
   def heart_css(objects)
     objects = Array.wrap(objects)
     id = (objects.size == 1 ? objects.first.id : 'bulk')
