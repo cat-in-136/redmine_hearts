@@ -1,6 +1,12 @@
 <%# frozen_string_literal: true %>
 <% self.class.send :include, HeartsHelper %>
 <% case @heartable %>
+<% when Issue %>
+  <% if defined?(@journals) && @journals.any? %>
+    <div class="journal-heart-holder">
+      <%= multiple_heart_links_with_counters(@journals, User.current).join.html_safe %>
+    </div>
+  <% end %>
 <% when Wiki %>
   <%= heart_link_with_counter @page, User.current %>
 <% when Message %>

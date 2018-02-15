@@ -1,6 +1,31 @@
 $(function() {
   "use strict";
 
+  $(".journal-heart-holder > .heart-link-with-count").each(function () {
+    let link = this;
+    let heartable_subject;
+    let num_insert = 0;
+    $.each(link.classList, function () {
+      let klass = this;
+      if (/^([-a-z0-9]+-[0-9]+)-heart$/.test(klass)) {
+        heartable_subject = RegExp.$1;
+      }
+    });
+
+    if (num_insert === 0) {
+      let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "journal-") + "-notes";
+      num_insert += $(link).insertBefore($("#" + note_subject + " .contextual :first-child")).length;
+    }
+    if (num_insert === 0) {
+      let journal_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "change-");
+      num_insert += $(link).appendTo($("#" + journal_subject)).length;
+      if (num_insert > 0) { $(link).wrap('<div class="contextual"></div>'); }
+    }
+
+    if (num_insert === 0) {
+      console.debug("Failed to transplant : " + link);
+    }
+  });
   $("#content > .heart-link-with-count, #main > .heart-link-with-count").each(function () {
     let link = this;
     let heartable_subject;
@@ -30,21 +55,6 @@ $(function() {
 
     if (num_insert === 0) {
       console.debug("Failed to transplant : ." + heartable_subject + "-heart");
-    }
-  });
-  $("#history > .journal + .heart-link-with-count").each(function () {
-    let link = this;
-    let num_insert = 0;
-    if (num_insert === 0) {
-      num_insert += $(link).insertBefore($(".contextual > :first-child", $(link).prev())).length;
-    }
-    if (num_insert === 0) {
-      num_insert += $(link).appendTo($(link).prev()).length;
-      if (num_insert > 0) { $(link).wrap('<div class="contextual"></div>'); }
-    }
-
-    if (num_insert === 0) {
-      console.debug("Failed to transplant : " + link);
     }
   });
 });
