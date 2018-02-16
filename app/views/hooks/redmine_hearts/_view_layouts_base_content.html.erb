@@ -11,9 +11,7 @@
   <%= heart_link_with_counter @page, User.current %>
 <% when Message %>
   <%= heart_link_with_counter @heartable, User.current %>
-  <% @heartable.children.each do |reply| %>
-    <%= heart_link_with_counter reply, User.current %>
-  <% end %>
+  <%= safe_join(multiple_heart_links_with_counters(@replies, User.current), '') if defined?(@replies) && @replies.any? %>
 <% else %>
   <%= heart_link_with_counter @heartable, User.current %>
 <% end %>
