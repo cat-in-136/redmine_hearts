@@ -4,7 +4,7 @@
 <% when Issue %>
   <% if defined?(@journals) && @journals.any? %>
     <div class="journal-heart-holder">
-      <%= multiple_heart_links_with_counters(@journals, User.current).join.html_safe %>
+      <%= safe_join(multiple_heart_links_with_counters(@journals, User.current), '') %>
     </div>
   <% end %>
 <% when Wiki %>
