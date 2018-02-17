@@ -107,12 +107,13 @@ module HeartsHelper
     when News
       link_to h(object.title), news_url(object)
     when Journal
-      journal_indice = object.issue.journals.ids.index(object.id) + 1 # TODO more better query wanted
-      [
+      journal_indice = object.issue.journals.reorder(:created_on, :id).ids.index(object.id) + 1
+      safe_join([
         link_to_issue(object.issue),
         ": ",
-        link_to("##{object.issue.id}#note-#{journal_indice}", "#{issue_url(object.issue)}#note-#{journal_indice}"),
-      ].join("").html_safe
+        link_to("##{object.issue.id}#note-#{journal_indice}",
+                issue_url(object.issue, :anchor => "note-#{journal_indice}")),
+      ], "")
     when WikiPage
       link_to h(object.title), object
     else
