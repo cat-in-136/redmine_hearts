@@ -53,7 +53,7 @@ module HeartsHelper
   end
 
   def multiple_heart_links_with_counters(objects, user)
-    return [] unless objects.any?
+    return [] unless objects.present? && objects.any?
 
     hearted_by_user = Heart.where(:heartable => objects, :user => user).
       pluck(:heartable_type, :heartable_id)

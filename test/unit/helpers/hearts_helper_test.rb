@@ -167,4 +167,9 @@ class HeartsHelperTest < Redmine::HelperTest
     #  - Issue.find(1), Issue.find(2), User.anonymous, and 2 calls within multiple_heart_links_with_counters.
     assert_equal 5, queries.length
   end
+
+  test '#multiple_heart_links_with_counters with nil and empty array should return empty array' do
+    assert_equal [], multiple_heart_links_with_counters(nil, User.find(1))
+    assert_equal [], multiple_heart_links_with_counters([], User.find(1))
+  end
 end
