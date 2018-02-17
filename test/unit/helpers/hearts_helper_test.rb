@@ -48,6 +48,19 @@ class HeartsHelperTest < Redmine::HelperTest
     assert_equal expected, heart_link_with_counter([Issue.find(1)], User.find(1))
   end
 
+  test '#heart_link_with_counter with a non-hearted object for anonymous user' do
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          content_tag(:span, "Like", :class => "icon icon-heart-off"),
+          content_tag(:span, "0", :class => "heart-count-number"),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
+  end
+
   test '#heart_link_with_counter with a multiple objets array' do
     expected = content_tag(:span, :class => "issue-bulk-heart heart-link-with-count") do
       safe_join(
@@ -94,5 +107,64 @@ class HeartsHelperTest < Redmine::HelperTest
       )
     end
     assert_equal expected, heart_link_with_counter(Issue.find(1), User.find(1))
+  end
+
+  test '#heart_link_with_counter with a hearted object for anonymous user' do
+    Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
+
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          content_tag(:span, "Like", :class => "icon icon-heart-off"),
+          content_tag(:span, "1", :class => "heart-count-number"),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
+  end
+
+  test '#multiple_heart_links_with_counters with multiple objects' do
+    queries = []
+    active_record_callback = lambda do |name, start, finish, id, payload|
+      queries << payload if payload[:sql] =~ /^SELECT|UPDATA|INSERT/
+    end
+
+    Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
+
+    expected = [
+      heart_link_with_counter(Issue.find(1), User.find(1)),
+      heart_link_with_counter(Issue.find(2), User.find(1)),
+    ]
+
+    ActiveSupport::Notifications.subscribed(active_record_callback, "sql.active_record") do
+      assert_equal expected, multiple_heart_links_with_counters([Issue.find(1), Issue.find(2)], User.find(1))
+    end
+
+    # assert 5 query calls
+    #  - Issue.find(1), Issue.find(2), User.find(1), and 2 calls within multiple_heart_links_with_counters.
+    assert_equal 5, queries.length
+  end
+
+  test '#multiple_heart_links_with_counters with multiple objects for anonymous user' do
+    queries = []
+    active_record_callback = lambda do |name, start, finish, id, payload|
+      queries << payload if payload[:sql] =~ /^SELECT|UPDATA|INSERT/
+    end
+
+    Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
+
+    expected = [
+      heart_link_with_counter(Issue.find(1), User.anonymous),
+      heart_link_with_counter(Issue.find(2), User.anonymous),
+    ]
+
+    ActiveSupport::Notifications.subscribed(active_record_callback, "sql.active_record") do
+      assert_equal expected, multiple_heart_links_with_counters([Issue.find(1), Issue.find(2)], User.anonymous)
+    end
+
+    # assert 5 query calls
+    #  - Issue.find(1), Issue.find(2), User.anonymous, and 2 calls within multiple_heart_links_with_counters.
+    assert_equal 5, queries.length
   end
 end
