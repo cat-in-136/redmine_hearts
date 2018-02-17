@@ -1,13 +1,17 @@
 <%# frozen_string_literal: true %>
 <% self.class.send :include, HeartsHelper %>
 <% case @heartable %>
+<% when Issue %>
+  <% if defined?(@journals) && @journals.any? %>
+    <div class="journal-heart-holder">
+      <%= safe_join(multiple_heart_links_with_counters(@journals, User.current), '') %>
+    </div>
+  <% end %>
 <% when Wiki %>
   <%= heart_link_with_counter @page, User.current %>
 <% when Message %>
   <%= heart_link_with_counter @heartable, User.current %>
-  <% @heartable.children.each do |reply| %>
-    <%= heart_link_with_counter reply, User.current %>
-  <% end %>
+  <%= safe_join(multiple_heart_links_with_counters(@replies, User.current), '') if defined?(@replies) && @replies.any? %>
 <% else %>
   <%= heart_link_with_counter @heartable, User.current %>
 <% end %>

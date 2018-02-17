@@ -40,14 +40,6 @@ class RedmineViewHookForDevHook < Redmine::Hook::ViewListener
     end
   end
 
-  def view_issues_history_journal_bottom(context={})
-    controller = context[:controller]
-    controller.send(:render_to_string, {
-      :partial => "hooks/redmine_hearts/view_issues_history_journal_bottom",
-      :locals => context
-    })
-  end
-
   def view_account_left_bottom(context={})
     heart_count = Heart.where(:user => context[:user]).count
     if heart_count > 0
