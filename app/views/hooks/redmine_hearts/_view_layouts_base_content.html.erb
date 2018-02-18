@@ -3,11 +3,9 @@
 <% case @heartable %>
 <% when Issue %>
   <%= heart_link_with_counter @heartable, User.current %>
-  <% if defined?(@journals) && @journals.any? %>
-    <div class="journal-heart-holder">
-      <%= safe_join(multiple_heart_links_with_counters(@journals, User.current), '') %>
-    </div>
-  <% end %>
+  <%= content_tag :div, :class => "journal-heart-holder" do %>
+    <%= safe_join(multiple_heart_links_with_counters(@journals, User.current), '') %>
+  <% end if defined?(@journals) && @journals.any? %>
 <% when Wiki %>
   <%= heart_link_with_counter @page, User.current %>
 <% when Message %>
