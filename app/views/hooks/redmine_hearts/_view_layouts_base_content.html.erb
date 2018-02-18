@@ -2,6 +2,7 @@
 <% self.class.send :include, HeartsHelper %>
 <% case @heartable %>
 <% when Issue %>
+  <%= heart_link_with_counter @heartable, User.current %>
   <% if defined?(@journals) && @journals.any? %>
     <div class="journal-heart-holder">
       <%= safe_join(multiple_heart_links_with_counters(@journals, User.current), '') %>
