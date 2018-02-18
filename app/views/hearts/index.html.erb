@@ -16,7 +16,7 @@
 <% else %>
   <% hearts_grouped = Heart.hearts_to(@heartables).
       order(:created_at => :desc).
-      includes(:user).
+      preload(:user => :email_address).
       group_by { |v| [v.heartable_type, v.heartable_id] } %>
   <ul>
   <% @heartables.each do |heartable| %>

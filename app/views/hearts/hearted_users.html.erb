@@ -3,7 +3,7 @@
   <h2><%= link_to_heartable heartable %></h2>
   <h3><%=t :hearts_count_label, :count => heartable.hearted_users.size %></h3>
   <%= content_tag :ul do %>
-    <% heartable.hearts.each do |heart| %>
+    <% heartable.hearts.preload(:user => :email_address).each do |heart| %>
       <%= content_tag :li, :class => "user-#{heart.user.id}" do %>
         <%= avatar(heart.user, :size => 16).to_s %>
         <%= authoring heart.created_at, heart.user, :label => :label_hearted_time_by %>
