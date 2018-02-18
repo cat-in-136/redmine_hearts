@@ -22,7 +22,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class HeartsHookedIssuesTest < Redmine::IntegrationTest
   fixtures :projects,
            :users,
-           :issues,
+           :issues, :journals,
            :hearts
 
   def test_index_shall_not_contain_hooks
