@@ -33,9 +33,9 @@ module HeartsHelper
   def multiple_heart_links_with_counters(objects, user)
     return [] unless objects.present? && objects.any?
 
-    hearted_by_user = Heart.where(:heartable => objects, :user => user).
+    hearted_by_user = Heart.hearts_to(objects).where(:user => user).
       pluck(:heartable_type, :heartable_id)
-    hearted_users_counts = Heart.where(:heartable => objects).
+    hearted_users_counts = Heart.hearts_to(objects).
       group(:heartable_type, :heartable_id).
       count
 

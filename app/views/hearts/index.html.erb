@@ -14,19 +14,25 @@
 <% if @heartables.empty? %>
   <p class="nodata"><%=l :label_no_data %></p>
 <% else %>
+  <% hearts_grouped = Heart.hearts_to(@heartables).
+      order(:created_at => :desc).
+      includes(:user).
+      group_by { |v| [v.heartable_type, v.heartable_id] } %>
   <ul>
   <% @heartables.each do |heartable| %>
+    <% hearts = hearts_grouped[[heartable.class.base_class.name, heartable.id]] || [] %>
     <li>
       <p>
         <%= link_to_project(heartable.project) + ": " %>
         <%= link_to_heartable heartable %>
       </p>
       <div>
-        <%= heart_link_with_counter heartable, User.current %>
+        <% heart_bool = hearts.any? { |v| v.user_id == User.current.id } %>
+        <% hearted_users_count = hearts.length %>
+        <%= heart_link_with_counter_manual heartable, heart_bool, hearted_users_count, User.current %>
       </div>
       <ul>
-        <% hearts = heartable.hearts.order(:created_at => :desc) %>
-        <% hearts = hearts.where.not(:user => User.current) unless params["including_myself"] %>
+        <% hearts = hearts.reject { |v| v[:user_id] == User.current.id } unless params["including_myself"] %>
         <% hearts.each do |heart| %>
           <li class="author">
             <%= avatar(heart.user, :size => "24") %>

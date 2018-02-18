@@ -53,6 +53,23 @@ class Heart < ActiveRecord::Base
     end
   end
 
+  def self.hearts_to(objects)
+    objects = objects.reject(&:new_record?)
+    if objects.any?
+      heart_conds = []
+      objects.group_by {|object| object.class.base_class}.each do |base_class, objects|
+        heart_conds << [
+          '(heartable_type = ? AND heartable_id in (?))',
+          [base_class.name, objects.map(&:id)]
+        ]
+      end
+      Heart.where(heart_conds.map(&:first).join(" OR "),
+                  *(heart_conds.map(&:last).inject([]) {|v,array| array.push(*v) }))
+    else
+      Heart.none
+    end
+  end
+
   protected
 
   def validate_user
