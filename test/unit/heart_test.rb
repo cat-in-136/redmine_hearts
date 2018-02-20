@@ -183,4 +183,10 @@ class HeartTest < ActiveSupport::TestCase
     assert Heart.prune > 0
     assert !Issue.find(4).hearted_by?(user)
   end
+
+  def test_hearts_to
+    assert_equal hearts(:hearts_001, :hearts_003).sort, Heart.hearts_to(Issue.where(:id => 2)).sort
+    assert_equal hearts(:hearts_001, :hearts_002, :hearts_003).sort, Heart.hearts_to([*(Issue.all), Message.find(1)]).sort
+    assert_equal Heart.none, Heart.hearts_to(Issue.none)
+  end
 end
