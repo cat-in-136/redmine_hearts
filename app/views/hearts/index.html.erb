@@ -18,15 +18,15 @@
       order(:created_at => :desc).
       preload(:user => :email_address).
       group_by { |v| [v.heartable_type, v.heartable_id] } %>
-  <ul>
+  <ul class="recent-heart-list">
   <% @heartables.each do |heartable| %>
     <% hearts = hearts_grouped[[heartable.class.base_class.name, heartable.id]] || [] %>
     <li>
-      <p>
-        <%= link_to_project(heartable.project) + ": " %>
-        <%= link_to_heartable heartable %>
-      </p>
       <div>
+        <span class="heartable-link">
+          <%= link_to_project(heartable.project) + ": " %>
+          <%= link_to_heartable heartable %>
+        </span>
         <% heart_bool = hearts.any? { |v| v.user_id == User.current.id } %>
         <% hearted_users_count = hearts.length %>
         <%= heart_link_with_counter_manual heartable, heart_bool, hearted_users_count, User.current %>

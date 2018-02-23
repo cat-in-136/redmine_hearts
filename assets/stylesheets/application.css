@@ -13,3 +13,22 @@
     border-left: 0 !important;
   }
 }
+
+/* hearts#index */
+.recent-heart-list {
+  border: 1px solid #e4e4e4;
+  padding: 0;
+}
+.recent-heart-list li {
+  display: block;
+  padding: 2px;
+}
+.recent-heart-list > li:nth-child(2n+1) {
+  background-color: #f6f7f8;
+}
+.recent-heart-list > li:nth-child(2n) {
+  background-color: #fff;
+}
+.recent-heart-list .heartable-link {
+  margin-right: 1em;
+}
