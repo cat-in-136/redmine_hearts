@@ -12,6 +12,11 @@
     margin-left: 0 !important;
     border-left: 0 !important;
   }
+
+  #history .journal .contextual .heart-link-with-count .heart-link-label,
+  .message.reply .contextual .heart-link-with-count .heart-link-label {
+    display: none;
+  }
 }
 
 /* hearts#index */

@@ -31,7 +31,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            "Like",
+            content_tag(:span, "Like", :class => 'heart-link-label'),
             heart_url(:object_id => 1, :object_type => 'issue'),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
@@ -52,7 +52,9 @@ class HeartsHelperTest < Redmine::HelperTest
     expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
       safe_join(
         [
-          content_tag(:span, "Like", :class => "icon icon-heart-off"),
+          content_tag(:span,
+                      content_tag(:span, "Like", :class => 'heart-link-label'),
+                      :class => "icon icon-heart-off"),
           content_tag(:span, "0", :class => "heart-count-number"),
         ],
         ""
@@ -66,7 +68,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            "Like",
+            content_tag(:span, "Like", :class => 'heart-link-label'),
             heart_url(:object_id => [1, 3], :object_type => 'issue'),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
@@ -93,7 +95,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            "Like",
+            content_tag(:span, "Like", :class => 'heart-link-label'),
             heart_url(:object_id => 1, :object_type => 'issue'),
             :remote => true, :method => 'delete', :class => "icon icon-heart"
           ),
@@ -115,7 +117,9 @@ class HeartsHelperTest < Redmine::HelperTest
     expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
       safe_join(
         [
-          content_tag(:span, "Like", :class => "icon icon-heart-off"),
+          content_tag(:span,
+                      content_tag(:span, "Like", :class => 'heart-link-label'),
+                      :class => "icon icon-heart-off"),
           content_tag(:span, "1", :class => "heart-count-number"),
         ],
         ""

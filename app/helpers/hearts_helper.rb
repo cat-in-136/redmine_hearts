@@ -52,7 +52,7 @@ module HeartsHelper
     objects = Array.wrap(objects)
 
     css = heart_bool ? 'icon icon-heart' : 'icon icon-heart-off'
-    text = l(:hearts_link_label)
+    text = content_tag :span, l(:hearts_link_label), :class => 'heart-link-label'
     url = heart_url(
       :object_type => objects.first.class.to_s.underscore,
       :object_id => (objects.size == 1 ? objects.first.id : objects.map(&:id).sort)
