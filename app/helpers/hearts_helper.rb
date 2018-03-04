@@ -109,4 +109,25 @@ module HeartsHelper
       link_to h(object.to_s), object
     end
   end
+
+  def render_api_heartable_include(heartable, api)
+    api.type heartable.class.base_class.name
+    api.id heartable.id
+    [:subject, :name, :title].each do |v|
+      if heartable.respond_to?(v) && heartable.__send__(v).present?
+        api.__send__ v, heartable.__send__(v)
+        break
+      end
+    end
+    api.project(:id => heartable.project.id, :name => heartable.project.name) if heartable.respond_to?(:project) && heartable.project.present?
+
+    if heartable.respond_to?(:journalized_type) && heartable.journalized_type.present? &&
+       heartable.respond_to?(:journalized_id) && heartable.journalized_id.present?
+      api.journalized do
+        api.type heartable.journalized_type
+        api.id heartable.journalized_id
+        api.note_index heartable.issue.journals.reorder(:created_on, :id).ids.index(heartable.id) + 1
+      end
+    end
+  end
 end

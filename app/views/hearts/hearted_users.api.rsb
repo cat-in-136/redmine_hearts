@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+api.array :heartables do
+  @heartables.each do |heartable|
+    api.heartable do
+      render_api_heartable_include(heartable, api)
+
+      api.hearted_users_count heartable.hearts.count
+      api.array :hearts do
+        heartable.hearts.each do |heart|
+          api.heart do
+            api.user(:id => heart.user_id, :name => heart.user.name) unless heart.user.nil?
+            api.created_at heart.created_at
+          end
+        end
+      end
+    end
+  end
+end
