@@ -111,8 +111,8 @@ module HeartsHelper
   end
 
   def render_api_heartable_include(heartable, api)
-    api.type heartable.class.base_class.name
-    api.id heartable.id
+    api.object_type heartable.class.base_class.name.parameterize
+    api.object_id heartable.id
     [:subject, :name, :title].each do |v|
       if heartable.respond_to?(v) && heartable.__send__(v).present?
         api.__send__ v, heartable.__send__(v)

@@ -67,16 +67,16 @@ class HeartsControllerTest < ActionController::TestCase
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables"=>
                 [
-                  {"type"=>"Message",
-                    "id"=>1,
+                  {"object_type"=>"message",
+                    "object_id"=>1,
                     "subject"=>"First post",
                     "project"=>{"id"=>1, "name"=>"eCookbook"},
                     "hearted_users_count"=>1,
                     "hearts"=>[
                       {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2007-05-13T16:16:33Z"}
                     ]},
-                  {"type"=>"Issue",
-                   "id"=>2,
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
                    "subject"=>"Add ingredients categories",
                    "project"=>{"id"=>1, "name"=>"eCookbook"},
                    "hearted_users_count"=>2,
@@ -107,8 +107,8 @@ class HeartsControllerTest < ActionController::TestCase
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables"=>
                 [
-                  {"type"=>"Issue",
-                   "id"=>2,
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
                    "subject"=>"Add ingredients categories",
                    "project"=>{"id"=>1, "name"=>"eCookbook"},
                    "hearted_users_count"=>2,
@@ -248,8 +248,8 @@ class HeartsControllerTest < ActionController::TestCase
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables"=>
                 [
-                  {"type"=>"Issue",
-                   "id"=>2,
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
                    "subject"=>"Add ingredients categories",
                    "project"=>{"id"=>1, "name"=>"eCookbook"},
                    "hearted_users_count"=>2,
