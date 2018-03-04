@@ -20,6 +20,8 @@
 class HeartsController < ApplicationController
   unloadable
 
+  accept_api_auth :index
+
   def index
     @offset, @limit = api_offset_and_limit
 
@@ -39,6 +41,7 @@ class HeartsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 

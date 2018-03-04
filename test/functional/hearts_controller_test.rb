@@ -54,6 +54,76 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/1"]', {:count => 1}
   end
 
+  def test_index_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :index, {
+        :format => 'json',
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {"heartables"=>
+                [
+                  {"type"=>"Message",
+                    "id"=>1,
+                    "subject"=>"First post",
+                    "project"=>{"id"=>1, "name"=>"eCookbook"},
+                    "hearted_users_count"=>1,
+                    "hearts"=>[
+                      {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2007-05-13T16:16:33Z"}
+                    ]},
+                  {"type"=>"Issue",
+                   "id"=>2,
+                   "subject"=>"Add ingredients categories",
+                   "project"=>{"id"=>1, "name"=>"eCookbook"},
+                   "hearted_users_count"=>2,
+                   "hearts"=>[
+                     {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2006-07-20T20:10:51Z"}
+                   ]}
+                ],
+                "total_count"=>2,
+                "offset"=>0,
+                "limit"=>25,
+                "including_myself"=>false}
+    assert_equal expected, response_as_json
+  end
+
+  def test_index_with_offset_limit_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :index, {
+        :format => 'json',
+        :offset => 1,
+        :limit => 1,
+        :including_myself => true,
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {"heartables"=>
+                [
+                  {"type"=>"Issue",
+                   "id"=>2,
+                   "subject"=>"Add ingredients categories",
+                   "project"=>{"id"=>1, "name"=>"eCookbook"},
+                   "hearted_users_count"=>2,
+                   "hearts"=>[
+                     {"user"=>{"id"=>3, "name"=>"Dave Lopper"},"created_at"=>"2006-07-21T20:10:51Z"},
+                     {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2006-07-20T20:10:51Z"}
+                   ]}
+                ],
+                "total_count"=>2,
+                "offset"=>1,
+                "limit"=>1,
+                "including_myself"=>true}
+    assert_equal expected, response_as_json
+  end
+
   def test_hearted_by
     get :hearted_by, :user_id => 1
     assert_response :success
