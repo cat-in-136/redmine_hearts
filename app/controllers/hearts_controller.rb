@@ -20,6 +20,8 @@
 class HeartsController < ApplicationController
   unloadable
 
+  accept_api_auth :index, :heart, :unheart, :hearted_users
+
   def index
     @offset, @limit = api_offset_and_limit
 
@@ -39,6 +41,7 @@ class HeartsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 
@@ -60,6 +63,7 @@ class HeartsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 
@@ -75,9 +79,8 @@ class HeartsController < ApplicationController
 
   def hearted_users
     respond_to do |format|
-      format.html {
-        render :hearted_users
-      }
+      format.html
+      format.api
     end
   end
 
@@ -112,6 +115,7 @@ class HeartsController < ApplicationController
         redirect_to_referer_or {render :html => text, :status => 200, :layout => true}
       }
       format.js { render :partial => 'set_heart', :locals => {:user => user, :hearted => heartables} }
+      format.api { render_api_ok }
     end
   end
 

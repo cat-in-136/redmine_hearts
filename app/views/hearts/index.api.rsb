@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+api.array :heartables, api_meta(:total_count => @scope_count, :offset => @offset, :limit => @limit, :including_myself => !!params["including_myself"]) do
+  hearts_grouped = Heart.hearts_to(@heartables).
+   order(:created_at => :desc).
+   preload(:user => :email_address).
+   group_by { |v| [v.heartable_type, v.heartable_id] }
+  @heartables.each do |heartable|
+    hearts = hearts_grouped[[heartable.class.base_class.name, heartable.id]] || []
+    api.heartable do
+      render_api_heartable_include(heartable, api)
+
+      hearted_users_count = hearts.length
+      hearts = hearts.reject { |v| v[:user_id] == User.current.id } unless params["including_myself"]
+      api.hearted_users_count hearted_users_count
+      api.array :hearts do
+        hearts.each do |heart|
+          api.heart do
+            api.user(:id => heart.user_id, :name => heart.user.name) unless heart.user.nil?
+            api.created_at heart.created_at
+          end
+        end
+      end
+    end
+  end
+end

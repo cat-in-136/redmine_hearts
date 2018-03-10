@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+api.array :heartables, api_meta(:total_count => @scope_count, :offset => @offset, :limit => @limit) do
+  @hearts.each do |heart|
+    api.heartable do
+      render_api_heartable_include(heart.heartable, api)
+
+      api.heart do
+        api.user(:id => heart.user_id, :name => heart.user.name)
+        api.created_at heart.created_at
+      end
+    end
+  end
+end

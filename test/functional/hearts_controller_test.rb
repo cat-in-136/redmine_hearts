@@ -54,12 +54,118 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/1"]', {:count => 1}
   end
 
+  def test_index_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :index, {
+        :format => 'json',
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {"heartables"=>
+                [
+                  {"object_type"=>"message",
+                    "object_id"=>1,
+                    "subject"=>"First post",
+                    "project"=>{"id"=>1, "name"=>"eCookbook"},
+                    "hearted_users_count"=>1,
+                    "hearts"=>[
+                      {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2007-05-13T16:16:33Z"}
+                    ]},
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
+                   "subject"=>"Add ingredients categories",
+                   "project"=>{"id"=>1, "name"=>"eCookbook"},
+                   "hearted_users_count"=>2,
+                   "hearts"=>[
+                     {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2006-07-20T20:10:51Z"}
+                   ]}
+                ],
+                "total_count"=>2,
+                "offset"=>0,
+                "limit"=>25,
+                "including_myself"=>false}
+    assert_equal expected, response_as_json
+  end
+
+  def test_index_with_offset_limit_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :index, {
+        :format => 'json',
+        :offset => 1,
+        :limit => 1,
+        :including_myself => true,
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {"heartables"=>
+                [
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
+                   "subject"=>"Add ingredients categories",
+                   "project"=>{"id"=>1, "name"=>"eCookbook"},
+                   "hearted_users_count"=>2,
+                   "hearts"=>[
+                     {"user"=>{"id"=>3, "name"=>"Dave Lopper"},"created_at"=>"2006-07-21T20:10:51Z"},
+                     {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2006-07-20T20:10:51Z"}
+                   ]}
+                ],
+                "total_count"=>2,
+                "offset"=>1,
+                "limit"=>1,
+                "including_myself"=>true}
+    assert_equal expected, response_as_json
+  end
+
   def test_hearted_by
     get :hearted_by, :user_id => 1
     assert_response :success
     assert_select '#content > ul > li', {:count => 2}
     assert_select '#content > ul > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
+  end
+
+  def test_hearted_by_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :hearted_by, {
+        :user_id => '1',
+        :format => 'json',
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {
+      "heartables"=>[
+        {
+          "object_type"=>"message",
+          "object_id"=>1,
+          "subject"=>"First post",
+          "project"=>{"id"=>1, "name"=>"eCookbook"},
+          "heart"=>{"user"=>{"id"=>1, "name"=>"Redmine Admin"}, "created_at"=>"2007-05-13T16:16:33Z"}
+        },
+        {
+          "object_type"=>"issue",
+          "object_id"=>2,
+          "subject"=>"Add ingredients categories",
+          "project"=>{"id"=>1, "name"=>"eCookbook"},
+          "heart"=>{"user"=>{"id"=>1, "name"=>"Redmine Admin"}, "created_at"=>"2006-07-20T20:10:51Z"}
+        }
+      ],
+      "total_count"=>2,
+      "offset"=>0,
+      "limit"=>25,
+    }
+    assert_equal expected, response_as_json
   end
 
   def test_heart_a_single_object_as_html
@@ -78,6 +184,22 @@ class HeartsControllerTest < ActionController::TestCase
       post :heart, :object_type => 'issue', :object_id => '1', :format => :js
       assert_response :success
       assert_include '$(".issue-1-heart")', response.body
+    end
+    assert Issue.find(1).hearted_by?(User.find(3))
+  end
+
+  def test_heart_a_single_object_as_api
+    assert_difference('Heart.count') do
+      with_settings :rest_api_enabled => '1' do
+        post :heart, {
+          :object_type => 'issue',
+          :object_id => '1',
+          :format => 'json',
+          :key => User.find(3).api_key
+        }
+      end
+      assert_response :success
+      assert_equal 'application/json', @response.content_type
     end
     assert Issue.find(1).hearted_by?(User.find(3))
   end
@@ -123,12 +245,57 @@ class HeartsControllerTest < ActionController::TestCase
     refute Issue.find(2).hearted_by?(User.find(3))
   end
 
+  def test_unheart_a_single_object_as_api
+    assert_difference('Heart.count', -1) do
+      with_settings :rest_api_enabled => '1' do
+        post :unheart, {
+          :object_type => 'issue',
+          :object_id => '2',
+          :format => 'json',
+          :key => User.find(3).api_key
+        }
+      end
+      assert_response :success
+      assert_equal 'application/json', @response.content_type
+    end
+    refute Issue.find(2).hearted_by?(User.find(3))
+  end
+
   def test_hearted_users_non_liked_object
     @request.session[:user_id] = 3
     get :hearted_users, :object_type => 'issue', :object_id => '1'
     assert_response :success
     assert_select '#content h3', {:text => "Not liked yet"}
     assert_select '#content ul', {:count => 0}
+  end
+
+  def test_hearted_users_non_liked_object_as_api
+    with_settings :rest_api_enabled => '1' do
+      get :hearted_users, {
+        :object_type => 'issue',
+        :object_id => '2',
+        :format => 'json',
+        :key => User.find(3).api_key
+      }
+    end
+    assert_response :success
+    assert_equal 'application/json', @response.content_type
+
+    response_as_json = JSON.parse(@response.body)
+    expected = {"heartables"=>
+                [
+                  {"object_type"=>"issue",
+                   "object_id"=>2,
+                   "subject"=>"Add ingredients categories",
+                   "project"=>{"id"=>1, "name"=>"eCookbook"},
+                   "hearted_users_count"=>2,
+                   "hearts"=>[
+                     {"user"=>{"id"=>3, "name"=>"Dave Lopper"},"created_at"=>"2006-07-21T20:10:51Z"},
+                     {"user"=>{"id"=>1, "name"=>"Redmine Admin"},"created_at"=>"2006-07-20T20:10:51Z"}
+                   ]}
+                ]
+    }
+    assert_equal expected, response_as_json
   end
 
   def test_hearted_users_liked_object
