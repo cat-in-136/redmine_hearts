@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module HeartsHelper
+  include ERB::Util
 
   def heart_link_with_counter(objects, user)
     objects = Array.wrap(objects)
@@ -84,12 +85,18 @@ module HeartsHelper
 
   def link_to_heartable(object)
     case object
+    when Board
+      link_to h(object.name), project_board_url(object.project, object)
     when Issue
       link_to_issue object
     when Message
       link_to_message object
     when News
       link_to h(object.title), news_url(object)
+    when Wiki
+      link_to t(:label_wiki), project_wiki_url(object.project)
+    when WikiPage
+      link_to h(object.title), object
     when Journal
       journal_indice = object.issue.journals.reorder(:created_on, :id).ids.index(object.id) + 1
       safe_join([
@@ -98,8 +105,6 @@ module HeartsHelper
         link_to("##{object.issue.id}#note-#{journal_indice}",
                 issue_url(object.issue, :anchor => "note-#{journal_indice}")),
       ], "")
-    when WikiPage
-      link_to h(object.title), object
     else
       link_to h(object.to_s), object
     end

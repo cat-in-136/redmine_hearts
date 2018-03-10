@@ -22,6 +22,8 @@ require File.expand_path('../../../test_helper', __FILE__)
 
 class HeartsHelperTest < Redmine::HelperTest
   include HeartsHelper
+  include ERB::Util
+
   include Rails.application.routes.url_helpers
 
   fixtures :users, :issues
@@ -175,5 +177,28 @@ class HeartsHelperTest < Redmine::HelperTest
   test '#multiple_heart_links_with_counters with nil and empty array should return empty array' do
     assert_equal [], multiple_heart_links_with_counters(nil, User.find(1))
     assert_equal [], multiple_heart_links_with_counters([], User.find(1))
+  end
+
+
+  {
+    :board => "link_to 'Help', project_board_url(object.project, object)",
+    :issue => "link_to_issue(object)",
+    :message => "link_to_message(object)",
+    :news => "link_to 'eCookbook first release !', news_url(object)",
+    :wiki => "link_to 'Wiki', project_wiki_url(object.project)",
+    :wiki_page => "link_to 'CookBook_documentation', object",
+    :journal => "link_to_issue(object.issue) + ': ' + link_to('#1#note-1', issue_url(object.issue, :anchor => 'note-1'))",
+
+    :user => "link_to 'Redmine Admin', '/users/1'", # fallback to link_to object
+    :project => "link_to 'eCookbook', '/projects/ecookbook'", # fallback to link_to object
+  }.each do |k,v|
+    test "#link_to_heartable_with_#{k}" do
+      object = k.to_s.classify.constantize.find(1)
+      expected = eval(v)
+      assert_equal expected, link_to_heartable(object)
+    end
+  end
+  test "#link_to_heartable_with_nil" do
+    assert_raises { link_to_heartable(nil) }
   end
 end
