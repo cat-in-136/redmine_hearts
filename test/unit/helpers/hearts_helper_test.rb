@@ -26,7 +26,8 @@ class HeartsHelperTest < Redmine::HelperTest
 
   include Rails.application.routes.url_helpers
 
-  fixtures :users, :issues
+  fixtures :users, :projects,
+    :boards, :issues, :messages, :news, :wikis, :wiki_pages, :journals
 
   test '#heart_link_with_counter with a non-hearted object' do
     expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
