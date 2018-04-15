@@ -10,7 +10,9 @@
   <%= heart_link_with_counter @page, User.current %>
 <% when Message %>
   <%= heart_link_with_counter @heartable, User.current %>
-  <%= safe_join(multiple_heart_links_with_counters(@replies, User.current), '') if defined?(@replies) && @replies.any? %>
+  <%= content_tag :div, :class => "replies-heart-holder" do %>
+    <%= safe_join(multiple_heart_links_with_counters(@replies, User.current), '') %>
+  <% end if defined?(@replies) && @replies.any? %>
 <% else %>
   <%= heart_link_with_counter @heartable, User.current %>
 <% end %>

@@ -37,3 +37,6 @@
 .recent-heart-list .heartable-link {
   margin-right: 1em;
 }
+.journal-heart-holder * {
+  display: none;
+}

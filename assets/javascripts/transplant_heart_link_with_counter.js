@@ -26,7 +26,7 @@ $(function() {
       console.debug("Failed to transplant : " + link);
     }
   });
-  $("#content > .heart-link-with-count, #main > .heart-link-with-count").each(function () {
+  $("#content > .heart-link-with-count, #main > .heart-link-with-count, .replies-heart-holder > .heart-link-with-count").each(function () {
     let link = this;
     let heartable_subject;
     let num_insert = 0;
