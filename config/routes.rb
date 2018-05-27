@@ -3,6 +3,7 @@
 
 Rails.application.routes.draw do
   get 'hearts', :to => 'hearts#index'
+  get 'projects/:project_id/hearts', :to => 'hearts#index'
   get 'hearts/hearted_by/:user_id', :to => 'hearts#hearted_by'
 
   post 'hearts/heart', :to => 'hearts#heart', :as => 'heart'

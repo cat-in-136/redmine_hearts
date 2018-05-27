@@ -22,10 +22,29 @@ class HeartsController < ApplicationController
 
   accept_api_auth :index, :heart, :unheart, :hearted_users
 
+  before_action :find_optional_project, :only => [:index]
+
   def index
     @offset, @limit = api_offset_and_limit
 
     scope = Heart.all
+    if @project
+      scope = [
+        Heart.where(:heartable => Board.where(:project_id => @project.id)),
+        Heart.where(:heartable => Issue.where(:project_id => @project.id)),
+        Heart.where(:heartable => Message.joins(:board).where(:boards => {:project_id => @project.id})),
+        Heart.where(:heartable => News.where(:project_id => @project.id)),
+        Heart.where(:heartable => Wiki.where(:project_id => @project.id)),
+        Heart.where(:heartable => WikiPage.joins(:wiki).where(:wikis => {:project_id => @project.id})),
+        Heart.where(:heartable => Journal.where(:journalized => Issue.where(:project_id => @project.id))),
+      ].reduce { |scope1, scope2|
+        Heart.where(
+          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+          )
+        ).tap { |scope| scope.bind_values = scope1.bind_values + scope2.bind_values }
+      }
+    end
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
     scope = scope.group(:heartable_type, :heartable_id)
     @scope_count = scope.pluck(1).count
@@ -85,6 +104,13 @@ class HeartsController < ApplicationController
   end
 
   private
+
+  def find_optional_project
+    @project = Project.find(params[:project_id]) unless params[:project_id].blank?
+    check_project_privacy if @project
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
 
   def find_project
     if params[:object_type] && params[:object_id]

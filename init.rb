@@ -30,5 +30,8 @@ Redmine::Plugin.register :redmine_hearts do
   author_url 'https://github.com/cat-in-136/'
 
   menu :application_menu, :hearts, {:controller => :hearts, :action => :index}, :caption => :hearts_link_label
+
+  permission :hearts, { :hearts => [:index] }, :public => false
+  menu :project_menu, :hearts, {:controller => :hearts, :action => :index}, :param => :project_id, :caption => :hearts_link_label
 end
 
