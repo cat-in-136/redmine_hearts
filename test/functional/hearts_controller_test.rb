@@ -126,7 +126,7 @@ class HeartsControllerTest < ActionController::TestCase
        "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
        "hearted_users_count" => 1,
        "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-05-04T10:34:07Z"}]},
+                     "created_at" => "2010-05-05T10:34:08Z"}]},
       {"object_type" => "news",
        "object_id" => 1,
        "title" => "eCookbook first release !",
@@ -212,8 +212,8 @@ class HeartsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select '#content > ul > li', {:count => 6}
     assert_select '#content > ul > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(2) a[href="/news/1"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(3) a[href="/issues/1#note-1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(3) a[href="/news/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(5) a[href="/projects/ecookbook/wiki"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(6) a[href="/issues/2"]', {:count => 1}
@@ -275,18 +275,18 @@ class HeartsControllerTest < ActionController::TestCase
                     "created_at" => "2010-10-01T10:34:04Z"},
       },
       {
-        "object_type" => "news",
-        "object_id" => 1,
-        "title" => "eCookbook first release !",
-        "project" => {"id" => 1, "name" => "eCookbook"},
-        "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-05-04T10:34:07Z"},
-      },
-      {
         "object_type" => "journal",
         "object_id" => 1,
         "project" => {"id" => 1, "name" => "eCookbook"},
         "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
+        "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
+                    "created_at" => "2010-05-05T10:34:08Z"},
+      },
+      {
+        "object_type" => "news",
+        "object_id" => 1,
+        "title" => "eCookbook first release !",
+        "project" => {"id" => 1, "name" => "eCookbook"},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
                     "created_at" => "2010-05-04T10:34:07Z"},
       },
