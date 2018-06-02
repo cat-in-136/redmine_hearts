@@ -42,7 +42,7 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
     assert_select '#content > .heart-link-with-count.issue-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.issue-1-heart span.heart-count-number', :text => "0"
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart', :count => 1
-    assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart span.heart-count-number', :text => "0"
+    assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart span.heart-count-number', :text => "1"
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-2-heart', :count => 1
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-2-heart span.heart-count-number', :text => "0"
     assert_select '.heart-link-with-count', :count => 3

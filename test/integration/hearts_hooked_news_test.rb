@@ -34,6 +34,8 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
   end
 
   def test_view
+    Heart.where(:heartable => News.find(1)).destroy_all
+
     get '/news/1'
     assert_response :success
     assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
@@ -45,7 +47,7 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
 
   def test_view_by_hearted_user
     log_user('dlopper', 'foo')
-    Heart.create!(:heartable => News.find(1), :user_id => 3)
+    #Heart.create!(:heartable => News.find(1), :user_id => 3)
 
     get '/news/1'
     assert_response :success

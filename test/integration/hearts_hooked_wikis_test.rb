@@ -34,13 +34,15 @@ class HeartsHookedWikisTest < Redmine::IntegrationTest
   end
 
   def test_view
+    Heart.where(:heartable => WikiPage.find(1)).destroy_all
+
     get '/projects/ecookbook/wiki/CookBook_documentation'
     assert_response :success
     assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
     assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
 
     assert_select '#content > .heart-link-with-count.wiki_page-1-heart', :count => 1
-    assert_select '#content > .heart-link-with-count.wiki_page-1-heart span.heart-count-number', :text => "1"
+    assert_select '#content > .heart-link-with-count.wiki_page-1-heart span.heart-count-number', :text => "0"
     assert_select '.heart-link-with-count', :count => 1
   end
 

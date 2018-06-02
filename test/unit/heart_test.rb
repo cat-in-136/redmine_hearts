@@ -25,6 +25,8 @@ class HeartTest < ActiveSupport::TestCase
            :issues, :issue_statuses, :enumerations, :trackers, :projects_trackers,
            :boards, :messages,
            :wikis, :wiki_pages,
+           :news, :comments,
+           :journals, :journal_details,
            :hearts
 
   def setup
@@ -141,16 +143,22 @@ class HeartTest < ActiveSupport::TestCase
     # public
     Heart.create!(:heartable => Issue.find(1), :user => user)
     Heart.create!(:heartable => Issue.find(2), :user => user)
+    Heart.create!(:heartable => Board.find(1), :user => user)
     Heart.create!(:heartable => Message.find(1), :user => user)
+    Heart.create!(:heartable => News.find(1), :user => user)
     Heart.create!(:heartable => Wiki.find(1), :user => user)
     Heart.create!(:heartable => WikiPage.find(2), :user => user)
+    Heart.create!(:heartable => Journal.find(1), :user => user)
 
     # private project (id: 2)
     Member.create!(:project => Project.find(2), :principal => user, :role_ids => [1])
     Heart.create!(:heartable => Issue.find(4), :user => user)
+    Heart.create!(:heartable => Board.find(3), :user => user)
     Heart.create!(:heartable => Message.find(7), :user => user)
+    Heart.create!(:heartable => News.find(3), :user => user)
     Heart.create!(:heartable => Wiki.find(2), :user => user)
     Heart.create!(:heartable => WikiPage.find(3), :user => user)
+    #Heart.create!(:heartable => Journal.find(_), :user => user)
 
     assert_no_difference 'Heart.count' do
       Heart.prune(:user => User.find(9))
@@ -158,7 +166,7 @@ class HeartTest < ActiveSupport::TestCase
 
     Member.delete_all
 
-    assert_difference 'Heart.count', -4 do
+    assert_difference 'Heart.count', -6 do
       Heart.prune(:user => User.find(9))
     end
 

@@ -25,6 +25,8 @@ class HeartsControllerTest < ActionController::TestCase
            :issues, :issue_statuses, :enumerations, :trackers, :projects_trackers,
            :boards, :messages,
            :wikis, :wiki_pages,
+           :news, :comments,
+           :journals, :journal_details,
            :hearts
 
   def setup
@@ -46,25 +48,29 @@ class HeartsControllerTest < ActionController::TestCase
     @request.session[:user_id] = 3
     get :index, :including_myself => true
     assert_response :success
-    assert_select '#content > ul.recent-heart-list > li', {:count => 5}
+    assert_select '#content > ul.recent-heart-list > li', {:count => 7}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/projects/ecookbook/wiki"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/news/1"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/boards/1/topics/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/issues/2"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/projects/ecookbook/wiki"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/users/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(6) a[href="/boards/1/topics/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(6) a[href="/users/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/issues/2"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/users/1"]', {:count => 1}
   end
 
   def test_index_as_api
     with_settings :rest_api_enabled => '1' do
       get :index, {
         :format => 'json',
-        :key => User.find(3).api_key
+        :key => User.find(3).api_key,
       }
     end
     assert_response :success
@@ -114,6 +120,20 @@ class HeartsControllerTest < ActionController::TestCase
        "hearted_users_count" => 1,
        "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
                      "created_at" => "2010-10-01T10:34:04Z"}]},
+      {"object_type" => "journal",
+       "object_id" => 1,
+       "project" => {"id" => 1, "name" => "eCookbook"},
+       "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
+       "hearted_users_count" => 1,
+       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
+                     "created_at" => "2010-05-04T10:34:07Z"}]},
+      {"object_type" => "news",
+       "object_id" => 1,
+       "title" => "eCookbook first release !",
+       "project" => {"id" => 1, "name" => "eCookbook"},
+       "hearted_users_count" => 1,
+       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
+                     "created_at" => "2010-05-04T10:34:07Z"}]},
       {"object_type" => "wikipage",
        "object_id" => 1,
        "title" => "CookBook_documentation",
@@ -144,7 +164,7 @@ class HeartsControllerTest < ActionController::TestCase
                     {"user" => {"id" => 1, "name" => "Redmine Admin"},
                      "created_at" => "2006-07-20T20:10:51Z"}]},
     ],
-                "total_count" => 5,
+                "total_count" => 7,
                 "offset" => 0,
                 "limit" => 25,
                 "including_myself" => true}
@@ -155,14 +175,14 @@ class HeartsControllerTest < ActionController::TestCase
     with_settings :rest_api_enabled => '1' do
       get :index, {
         :format => 'json',
-        :offset => 1,
+        :offset => 3,
         :limit => 1,
         :including_myself => true,
         :key => User.find(3).api_key,
       }
     end
     assert_response :success
-    assert_equal 'application/json', @response.content_type
+    assert_equal "application/json", @response.content_type
 
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables" => [
@@ -174,8 +194,8 @@ class HeartsControllerTest < ActionController::TestCase
        "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
                      "created_at" => "2010-05-03T10:34:06Z"}]},
     ],
-                "total_count" => 5,
-                "offset" => 1,
+                "total_count" => 7,
+                "offset" => 3,
                 "limit" => 1,
                 "including_myself" => true}
     assert_equal expected, response_as_json
@@ -190,11 +210,13 @@ class HeartsControllerTest < ActionController::TestCase
 
     get :hearted_by, :user_id => 3
     assert_response :success
-    assert_select '#content > ul > li', {:count => 4}
+    assert_select '#content > ul > li', {:count => 6}
     assert_select '#content > ul > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(2) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(3) a[href="/projects/ecookbook/wiki"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(4) a[href="/issues/2"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(2) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(3) a[href="/issues/1#note-1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(5) a[href="/projects/ecookbook/wiki"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(6) a[href="/issues/2"]', {:count => 1}
   end
 
   def test_hearted_by_as_api
@@ -253,6 +275,22 @@ class HeartsControllerTest < ActionController::TestCase
                     "created_at" => "2010-10-01T10:34:04Z"},
       },
       {
+        "object_type" => "news",
+        "object_id" => 1,
+        "title" => "eCookbook first release !",
+        "project" => {"id" => 1, "name" => "eCookbook"},
+        "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
+                    "created_at" => "2010-05-04T10:34:07Z"},
+      },
+      {
+        "object_type" => "journal",
+        "object_id" => 1,
+        "project" => {"id" => 1, "name" => "eCookbook"},
+        "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
+        "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
+                    "created_at" => "2010-05-04T10:34:07Z"},
+      },
+      {
         "object_type" => "wikipage",
         "object_id" => 1,
         "title" => "CookBook_documentation",
@@ -276,7 +314,7 @@ class HeartsControllerTest < ActionController::TestCase
                     "created_at" => "2006-07-21T20:10:51Z"},
       },
     ],
-                "total_count" => 4,
+                "total_count" => 6,
                 "offset" => 0,
                 "limit" => 25}
     assert_equal expected, response_as_json
@@ -320,8 +358,8 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_heart_a_collection_with_a_single_object
     @request.session[:user_id] = 3
-    assert_difference('Heart.count') do
-      post :heart, :object_type => 'issue', :object_id => ['1'], :format => :js
+    assert_difference("Heart.count") do
+      post :heart, :object_type => "issue", :object_id => ["1"], :format => :js
       assert_response :success
       assert_include '$(".issue-1-heart")', response.body
     end
