@@ -84,9 +84,11 @@ module HeartsHelper
   end
 
   def link_to_heartable(object)
+    only_path = true
+
     case object
     when Board
-      link_to h(object.name), project_board_url(object.project, object)
+      link_to h(object.name), project_board_url(object.project, object, :only_path => true)
     when Issue
       link_to_issue object
     when Message
@@ -94,7 +96,7 @@ module HeartsHelper
     when News
       link_to h(object.title), news_url(object)
     when Wiki
-      link_to t(:label_wiki), project_wiki_url(object.project)
+      link_to t(:label_wiki), project_wiki_url(object.project, :only_path => true)
     when WikiPage
       link_to h(object.title), object
     when Journal

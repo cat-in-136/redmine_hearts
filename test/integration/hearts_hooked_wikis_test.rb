@@ -40,13 +40,13 @@ class HeartsHookedWikisTest < Redmine::IntegrationTest
     assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
 
     assert_select '#content > .heart-link-with-count.wiki_page-1-heart', :count => 1
-    assert_select '#content > .heart-link-with-count.wiki_page-1-heart span.heart-count-number', :text => "0"
+    assert_select '#content > .heart-link-with-count.wiki_page-1-heart span.heart-count-number', :text => "1"
     assert_select '.heart-link-with-count', :count => 1
   end
 
   def test_view_by_hearted_user
     log_user('dlopper', 'foo')
-    Heart.create!(:heartable => WikiPage.find(1), :user_id => 3)
+    #Heart.create!(:heartable => WikiPage.find(1), :user_id => 3)
 
     get '/projects/ecookbook/wiki/CookBook_documentation'
     assert_response :success
