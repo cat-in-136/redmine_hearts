@@ -113,6 +113,26 @@ class HeartTest < ActiveSupport::TestCase
     assert_nil issue.addable_hearted_users.detect {|user| !issue.visible?(user)}
   end
 
+  def test_scope_of_projects
+    objects = Heart.of_projects([Project.find(1)]).order(:id).to_a
+    assert_equal Heart.all.to_a, objects
+  end
+
+  def test_scope_of_projects_with_none_shall_return_none
+    objects = Heart.of_projects(Project.none).order(:id).to_a
+    assert_equal Heart.none, objects
+  end
+
+  def test_scope_of_projects_where_another_project
+    hearts_issue4 = Heart.new(:heartable => Issue.find(4), :user => User.find(1))
+    assert hearts_issue4.save(:validate => false)
+
+    objects = Heart.of_projects([Project.find(2)]).order(:id).to_a
+    assert_equal [hearts_issue4], objects
+
+    assert hearts_issue4.destroy
+  end
+
   def test_any_hearted_should_return_false_if_no_object_is_hearted
     objects = (0..2).map {Issue.generate!}
 

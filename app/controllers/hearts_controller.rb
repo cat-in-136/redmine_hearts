@@ -27,24 +27,7 @@ class HeartsController < ApplicationController
   def index
     @offset, @limit = api_offset_and_limit
 
-    scope = Heart.all
-    if @project
-      scope = [
-        Heart.where(:heartable => Board.where(:project_id => @project.id)),
-        Heart.where(:heartable => Issue.where(:project_id => @project.id)),
-        Heart.where(:heartable => Message.joins(:board).where(:boards => {:project_id => @project.id})),
-        Heart.where(:heartable => News.where(:project_id => @project.id)),
-        Heart.where(:heartable => Wiki.where(:project_id => @project.id)),
-        Heart.where(:heartable => WikiPage.joins(:wiki).where(:wikis => {:project_id => @project.id})),
-        Heart.where(:heartable => Journal.where(:journalized => Issue.where(:project_id => @project.id))),
-      ].reduce { |scope1, scope2|
-        Heart.where(
-          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-          )
-        ).tap { |scope| scope.bind_values = scope1.bind_values + scope2.bind_values }
-      }
-    end
+    scope = Heart.of_projects(@project ? [@project] : Project.visible)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
     scope = scope.group(:heartable_type, :heartable_id)
     @scope_count = scope.pluck(1).count

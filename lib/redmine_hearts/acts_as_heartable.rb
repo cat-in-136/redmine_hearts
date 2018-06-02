@@ -28,6 +28,12 @@ module Redmine
       module ClassMethods
         def acts_as_heartable(options = {})
           return if self.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+          options.assert_valid_keys(:project_key, :joins)
+
+          cattr_accessor :heartable_options
+          self.heartable_options = options
+          self.heartable_options[:project_key] ||= "#{table_name}.project_id"
+
           class_eval do
             has_many :hearts, :as => :heartable, :dependent => :delete_all
             has_many :hearted_users, :through => :hearts, :source => :user, :validate => false

@@ -29,6 +29,29 @@ class Heart < ActiveRecord::Base
   validate :validate_user
   attr_protected :id
 
+  scope :of_projects, lambda { |projects|
+    ActiveRecord::Base.subclasses.select { |klass|
+      klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+    }.map { |klass|
+      heartables = klass.all
+      heartables = heartables.joins(klass.heartable_options[:joins]) if klass.heartable_options.include?(:joins)
+      if klass.heartable_options[:project_key].kind_of? Proc
+        heartables = klass.heartable_options[:project_key].call(heartables, projects)
+      else
+        heartables = heartables.where("#{klass.heartable_options[:project_key]} IN (?)", projects.map(&:id))
+      end
+      Heart.where(:heartable => heartables)
+    }.reduce { |scope1, scope2|
+      Heart.where(
+        Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+          Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+        )
+      ).tap { |scope12|
+        scope12.bind_values = scope1.bind_values + scope2.bind_values
+      }
+    }
+  }
+
   def self.any_hearted?(objects, user)
     objects = objects.reject(&:new_record?)
     if objects.any?

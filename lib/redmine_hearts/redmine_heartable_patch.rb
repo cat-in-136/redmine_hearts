@@ -19,9 +19,22 @@
 
 module RedmineHeartablePatch
   def self.included(base) # :nodoc:
+    options = {}
+    if base == Message
+      options[:joins] = :board
+      options[:project_key] = "#{Board.table_name}.project_id"
+    elsif base == WikiPage
+      options[:joins] = :wiki
+      options[:project_key] = "#{Wiki.table_name}.project_id"
+    elsif base == Journal
+      options[:project_key] = Proc.new do |scope, projects|
+        scope.where(:journalized => Issue.where(:project_id => projects.map(&:id)))
+      end
+    end
+
     base.class_eval do
       unloadable
-      acts_as_heartable
+      acts_as_heartable options
     end
   end
 end
