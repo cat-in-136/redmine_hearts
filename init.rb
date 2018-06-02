@@ -31,7 +31,7 @@ Redmine::Plugin.register :redmine_hearts do
 
   menu :application_menu, :hearts, {:controller => :hearts, :action => :index}, :caption => :hearts_link_label
 
-  permission :hearts, { :hearts => [:index] }, :public => false
+  permission :hearts, { :hearts => [:index] }, :public => true
   menu :project_menu, :hearts, {:controller => :hearts, :action => :index}, :param => :project_id, :caption => :hearts_link_label
 end
 
