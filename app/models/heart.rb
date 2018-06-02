@@ -29,11 +29,20 @@ class Heart < ActiveRecord::Base
   validate :validate_user
   attr_protected :id
 
-  scope :of_projects, lambda { |projects|
+  scope :of_projects, lambda { |*args|
+    projects = args.size > 0 ? args.shift : Project.none
+    user = args.size > 0 ? args.shift : nil
+    raise ArgumentError if args.size > 0
+
     ActiveRecord::Base.subclasses.select { |klass|
       klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
     }.map { |klass|
-      heartables = klass.all
+      if user && klass.respond_to?(:visible)
+        heartables = klass.visible(user)
+      else
+        heartables = klass.all
+      end
+
       heartables = heartables.joins(klass.heartable_options[:joins]) if klass.heartable_options.include?(:joins)
       if klass.heartable_options[:project_key].kind_of? Proc
         heartables = klass.heartable_options[:project_key].call(heartables, projects)

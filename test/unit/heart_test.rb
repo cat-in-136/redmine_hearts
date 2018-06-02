@@ -118,6 +118,22 @@ class HeartTest < ActiveSupport::TestCase
     assert_equal Heart.all.to_a, objects
   end
 
+  def test_scope_of_projects_by_user
+    hearts_issue6 = Heart.new(:heartable => Issue.find(6), :user => User.find(1))
+    assert hearts_issue6.save(:validate => false)
+    hearts_issue14 = Heart.new(:heartable => Issue.find(14), :user => User.find(1))
+    assert hearts_issue14.save(:validate => false)
+
+    objects = Heart.of_projects(Project.all, User.find(1)).order(:id).to_a
+    assert_equal Heart.all.to_a, objects
+
+    objects = Heart.of_projects(Project.all, User.find(3)).order(:id).to_a
+    assert_equal Heart.where.not(:id => [hearts_issue6.id, hearts_issue14.id]).to_a, objects
+
+    assert hearts_issue6.destroy
+    assert hearts_issue14.destroy
+  end
+
   def test_scope_of_projects_with_none_shall_return_none
     objects = Heart.of_projects(Project.none).order(:id).to_a
     assert_equal Heart.none, objects
