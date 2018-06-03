@@ -27,7 +27,7 @@ class HeartsController < ApplicationController
   def index
     @offset, @limit = api_offset_and_limit
 
-    scope = Heart.of_projects(@project ? [@project] : Project.visible)
+    scope = Heart.of_projects(@project ? [@project] : Project.visible, User.current)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
     scope = scope.group(:heartable_type, :heartable_id)
     @scope_count = scope.pluck(1).count
