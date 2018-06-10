@@ -27,7 +27,7 @@ class Heart < ActiveRecord::Base
   validates_presence_of :user
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
   validate :validate_user
-  attr_protected :id
+  attr_protected :id if method_defined? :attr_protected
 
   scope :of_projects, lambda { |*args|
     projects = args.size > 0 ? args.shift : Project.none
@@ -51,13 +51,17 @@ class Heart < ActiveRecord::Base
       end
       Heart.where(:heartable => heartables)
     }.reduce { |scope1, scope2|
-      Heart.where(
-        Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-          Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-        )
-      ).tap { |scope12|
-        scope12.bind_values = scope1.bind_values + scope2.bind_values
-      }
+      if ActiveRecord::VERSION::MAJOR >= 5
+        scope1.or(scope2)
+      else
+        Heart.where(
+          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+          )
+        ).tap { |scope12|
+          scope12.bind_values = scope1.bind_values + scope2.bind_values
+        }
+      end
     }
   }
 
