@@ -20,6 +20,7 @@ ActionDispatch::Callbacks.to_prepare do
   IssueQuery.add_available_column(
     QueryAssociationColumn.new(:hearts, :count,
                                :caption => :hearts_link_label,
+                               :default_order => 'desc',
                                :sortable => lambda {
                                  query_str = Heart.where(:heartable_type => Issue, :heartable_id => "9999").
                                    select("COUNT(*)").
