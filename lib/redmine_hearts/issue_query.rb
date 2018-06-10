@@ -16,9 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 
-IssueQuery.add_available_column(QueryAssociationColumn.new(:hearts, :count, :sortable => lambda {
-  query_str = Heart.where(:heartable_type => Issue, :heartable_id => '9999').select("COUNT(*)").
-    to_sql.sub('9999', "#{Issue.table_name}.id")
-  "(#{query_str})"
-}, :caption => :hearts_link_label))
-
+ActionDispatch::Callbacks.to_prepare do
+  IssueQuery.add_available_column(
+    QueryAssociationColumn.new(:hearts, :count,
+                               :caption => :hearts_link_label,
+                               :sortable => lambda {
+                                 query_str = Heart.where(:heartable_type => Issue, :heartable_id => "9999").
+                                   select("COUNT(*)").
+                                   to_sql.sub("9999", "#{Issue.table_name}.id")
+                                 "(#{query_str})"
+                               })
+  )
+end
