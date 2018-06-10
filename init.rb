@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require_dependency 'redmine_hearts/acts_as_heartable.rb'
+require_dependency 'redmine_hearts/issue_query.rb'
 require_dependency 'redmine_hearts/redmine_heartable_patch.rb'
 require_dependency 'redmine_hearts/view_hook.rb'
 
