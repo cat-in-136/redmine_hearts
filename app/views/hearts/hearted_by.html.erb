@@ -7,7 +7,6 @@
 <% else %>
   <ul>
   <% @hearts.each do |heart| %>
-    <% binding.pry if heart.created_at.nil? %>
     <li>
       <%= link_to_heartable heart.heartable %>
       <div><%= l(:label_hearted_time, :age => time_tag(heart.created_at)).html_safe %></div>
