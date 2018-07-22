@@ -61,6 +61,32 @@ class Heart < ActiveRecord::Base
     }
   }
 
+  scope :notifications_to, lambda { |user|
+    raise ArgumentError unless user
+
+    ActiveRecord::Base.subclasses.select { |klass|
+      klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+    }.select { |klass|
+      klass.column_names.include?("author_id") || klass.column_names.include?("user_id")
+    }.map { |klass|
+      if klass.column_names.include?("author_id")
+        Heart.where(:heartable => klass.where(:author_id => user.id))
+      elsif klass.column_names.include?("user_id")
+        Heart.where(:heartable => klass.where(:user_id => user.id))
+      else
+        Heart.none
+      end
+    }.reduce { |scope1, scope2|
+      Heart.where(
+        Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+          Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+        )
+      ).tap { |scope12|
+        scope12.bind_values = scope1.bind_values + scope2.bind_values
+      }
+    }
+  }
+
   def self.any_hearted?(objects, user)
     objects = objects.reject(&:new_record?)
     if objects.any?

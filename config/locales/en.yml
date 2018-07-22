@@ -6,7 +6,8 @@ en:
   label_hearted_time: "Liked %{age} ago"
   label_hearted_time_by: "Liked by %{author} %{age} ago"
   hearts_link_label: Like
-  hearts_count_label: 
+  hearts_count_label:
     zero: "Not liked yet"
     one: "%{count} Like"
     other: "%{count} Likes"
+  hearts_notification_label: My activities recently liked
