@@ -217,6 +217,16 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul > li:nth-child(1) a[href="/issues/5"]', {:count => 1}
   end
 
+  def test_notifications
+    @request.session[:user_id] = 2
+
+    get :notifications
+    assert_response :success
+    assert_select '#content > ul > li', {:count => 2}
+    assert_select '#content > ul > li:nth-child(1) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
+  end
+
   def test_hearted_by
     get :hearted_by, :user_id => 1
     assert_response :success

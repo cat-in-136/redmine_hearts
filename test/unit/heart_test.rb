@@ -149,6 +149,17 @@ class HeartTest < ActiveSupport::TestCase
     assert hearts_issue4.destroy
   end
 
+  def test_scope_notifications_to
+    hearts_user1 = Heart.notifications_to(User.find(1))
+    assert_equal hearts(:hearts_002, :hearts_008).sort, hearts_user1.sort
+
+    hearts_user2 = Heart.notifications_to(User.find(2))
+    assert_equal hearts(:hearts_001, :hearts_003, :hearts_007).sort, hearts_user2.sort
+
+    hearts_user3 = Heart.notifications_to(User.find(3))
+    assert_equal [], hearts_user3.sort
+  end
+
   def test_any_hearted_should_return_false_if_no_object_is_hearted
     objects = (0..2).map {Issue.generate!}
 
