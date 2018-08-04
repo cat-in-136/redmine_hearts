@@ -2,6 +2,7 @@
 en:
   recently_hearted_objects: Recently Liked
   recently_hearted_by: "Recently Liked by %{author}"
+  recently_hearted_by_me: "Recently Liked by me"
   including_hearted_myself: Include liked by myself
   label_hearted_time: "Liked %{age} ago"
   label_hearted_time_by: "Liked by %{author} %{age} ago"
