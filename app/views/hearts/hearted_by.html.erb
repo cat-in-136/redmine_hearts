@@ -16,5 +16,8 @@
   <span class="pagination"><%= pagination_links_full @hearts_pages %></span>
 <% end %>
 
+<%= content_for :sidebar do %>
+  <%= render :partial => "hearts/sidebar" %>
+<% end %>
 
 <% html_title(t(:recently_hearted_by, :author => @user.name)) %>

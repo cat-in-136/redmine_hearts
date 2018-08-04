@@ -4,6 +4,10 @@
 
 <%= render :partial => "hearts/recent_heart_list" %>
 
+<%= content_for :sidebar do %>
+  <%= render :partial => "hearts/sidebar" %>
+<% end %>
+
 <% html_title(l(:hearts_notification_label)) %>
 <% content_for :header_tags do %>
   <%= render :partial => "hearts/heart_link_with_counter" %>
