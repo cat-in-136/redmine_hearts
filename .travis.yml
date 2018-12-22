@@ -5,8 +5,8 @@ cache:
   - redmine/vendor/bundle
 matrix:
   include:
-  - rvm: 2.6.0-rc2
-    env: REDMINE_VERSION=3.4.7
+#  - rvm: 2.6.0-rc2
+#    env: REDMINE_VERSION=3.4.7
   - rvm: 2.5.3
     env: REDMINE_VERSION=3.4.7
   - rvm: 2.4.5
