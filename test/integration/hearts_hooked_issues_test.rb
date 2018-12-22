@@ -22,8 +22,9 @@ require File.expand_path('../../test_helper', __FILE__)
 class HeartsHookedIssuesTest < Redmine::IntegrationTest
   fixtures :projects,
            :users,
-           :issues, :journals,
-           :hearts
+           :issues, :journals
+  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
+                                           [:hearts])
 
   def test_index_shall_not_contain_hooks
     get '/projects/1/issues/'

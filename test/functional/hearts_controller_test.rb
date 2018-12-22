@@ -26,8 +26,9 @@ class HeartsControllerTest < ActionController::TestCase
            :boards, :messages,
            :wikis, :wiki_pages,
            :news, :comments,
-           :journals, :journal_details,
-           :hearts
+           :journals, :journal_details
+  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
+                                           [:hearts])
 
   def setup
     User.current = nil
