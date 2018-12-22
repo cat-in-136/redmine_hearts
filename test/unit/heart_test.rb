@@ -151,11 +151,13 @@ class HeartTest < ActiveSupport::TestCase
   end
 
   def test_scope_notifications_to
+    hearts = lambda { |name| Heart.find(ActiveRecord::FixtureSet.all_loaded_fixtures["hearts"].fixtures[name.to_s].fixture["id"]) }
+
     hearts_user1 = Heart.notifications_to(User.find(1))
-    assert_equal hearts(:hearts_002, :hearts_008).sort, hearts_user1.sort
+    assert_equal [:hearts_002, :hearts_008].map(&hearts).sort, hearts_user1.sort
 
     hearts_user2 = Heart.notifications_to(User.find(2))
-    assert_equal hearts(:hearts_001, :hearts_003, :hearts_007).sort, hearts_user2.sort
+    assert_equal [:hearts_001, :hearts_003, :hearts_007].map(&hearts).sort, hearts_user2.sort
 
     hearts_user3 = Heart.notifications_to(User.find(3))
     assert_equal [], hearts_user3.sort
@@ -241,8 +243,10 @@ class HeartTest < ActiveSupport::TestCase
   end
 
   def test_hearts_to
-    assert_equal hearts(:hearts_001, :hearts_003).sort, Heart.hearts_to(Issue.where(:id => 2)).sort
-    assert_equal hearts(:hearts_001, :hearts_002, :hearts_003).sort, Heart.hearts_to([*(Issue.all), Message.find(1)]).sort
+    hearts = lambda { |name| Heart.find(ActiveRecord::FixtureSet.all_loaded_fixtures["hearts"].fixtures[name.to_s].fixture["id"]) }
+
+    assert_equal [:hearts_001, :hearts_003].map(&hearts).sort, Heart.hearts_to(Issue.where(:id => 2)).sort
+    assert_equal [:hearts_001, :hearts_002, :hearts_003].map(&hearts).sort, Heart.hearts_to([*(Issue.all), Message.find(1)]).sort
     assert_equal Heart.none, Heart.hearts_to(Issue.none)
   end
 end
