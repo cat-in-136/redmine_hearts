@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 
-ActionDispatch::Callbacks.to_prepare do
+((Rails.version > "5")? ActiveSupport::Reloader : ActionDispatch::Callbacks).to_prepare do
   IssueQuery.add_available_column(
     QueryAssociationColumn.new(:hearts, :count,
                                :caption => :hearts_link_label,
