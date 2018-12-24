@@ -20,7 +20,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedBoardsTest < Redmine::IntegrationTest
-  fixtures :projects,
+  fixtures :projects, :enabled_modules,
            :users,
            :boards, :messages
   ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),

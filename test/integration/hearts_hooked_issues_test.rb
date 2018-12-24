@@ -22,7 +22,19 @@ require File.expand_path('../../test_helper', __FILE__)
 class HeartsHookedIssuesTest < Redmine::IntegrationTest
   fixtures :projects,
            :users,
-           :issues, :journals
+           :members,
+           :member_roles,
+           :roles,
+           :trackers,
+           :projects_trackers,
+           :enabled_modules,
+           :issue_statuses,
+           :issues,
+           :journals,
+           :enumerations,
+           :custom_fields,
+           :custom_values,
+           :custom_fields_trackers
   ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
                                            [:hearts])
 
@@ -74,7 +86,9 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
   def test_view_with_private_notes
     Journal.where(:journalized => Issue.find(1)).delete_all
     30.times do |idx|
-      Journal.create!(:user_id => 3, :journalized => Issue.find(1), :notes => "foobarbaz", :private_notes => (idx % 10 == 1))
+      journal = Journal.new(:user_id => 3, :journalized => Issue.find(1), :notes => "foobarbaz", :private_notes => (idx % 10 == 1))
+      journal.notify = false # to suppress email notification
+      journal.save
     end
 
     get '/issues/1'
