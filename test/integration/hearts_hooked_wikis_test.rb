@@ -20,12 +20,13 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedWikisTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects, :enabled_modules,
            :users,
            :roles, :member_roles, :members,
            :wikis, :wiki_pages, :wiki_contents, :wiki_content_versions
-  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
-                                           [:hearts])
+  plugin_fixtures :hearts
 
   def test_index_shall_not_contain_hooks
     get '/projects/ecookbook/wiki/index'

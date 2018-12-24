@@ -20,12 +20,13 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedNewsTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects, :enabled_modules,
            :users,
            :roles, :member_roles, :members,
            :news
-  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
-                                           [:hearts])
+  plugin_fixtures :hearts
 
   def test_index
     get '/news/'

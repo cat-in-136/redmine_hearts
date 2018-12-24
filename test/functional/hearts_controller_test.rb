@@ -21,14 +21,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsControllerTest < ActionController::TestCase
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects, :users, :members, :member_roles, :roles, :enabled_modules,
            :issues, :issue_statuses, :enumerations, :trackers, :projects_trackers,
            :boards, :messages,
            :wikis, :wiki_pages,
            :news, :comments,
            :journals, :journal_details
-  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
-                                           [:hearts])
+  plugin_fixtures :hearts
 
   def setup
     User.current = nil

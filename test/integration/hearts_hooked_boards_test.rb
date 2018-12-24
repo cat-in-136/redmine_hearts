@@ -20,11 +20,12 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedBoardsTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects, :enabled_modules,
            :users,
            :boards, :messages
-  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
-                                           [:hearts])
+  plugin_fixtures :hearts
 
   def test_index_shall_not_contain_hooks
     get '/projects/1/boards/'

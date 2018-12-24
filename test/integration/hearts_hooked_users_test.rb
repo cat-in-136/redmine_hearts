@@ -20,10 +20,11 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedUsersTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects,
            :users
-  ActiveRecord::FixtureSet.create_fixtures(File.join(File.dirname(__FILE__), '../fixtures'),
-                                           [:hearts])
+  plugin_fixtures :hearts
 
   def test_show
     log_user('dlopper', 'foo')
