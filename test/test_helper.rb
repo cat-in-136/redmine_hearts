@@ -22,7 +22,7 @@ module Redmine
                   unless fixture
                     raise StandardError, "No fixture named '#{f_name}' found for fixture set '#{fs_name}'"
                   end
-                  fixture.model_class.find(fixture["id"])
+                  fixture.find
                 end
 
                 return_single_record ? instances.first : instances
