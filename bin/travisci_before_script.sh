@@ -18,6 +18,3 @@ bundle exec rake redmine:load_default_data
 
 # Execute plugin's migration
 bundle exec rake redmine:plugins NAME=${PLUGIN_NAME}
-
-# Start phantomjs
-phantomjs --webdriver 0.0.0.0:4444 >> phantomjs.log &
