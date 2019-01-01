@@ -50,7 +50,7 @@ class Heart < ActiveRecord::Base
       end
       Heart.where(:heartable => heartables)
     }.reduce { |scope1, scope2|
-      if ActiveRecord::VERSION::MAJOR >= 5
+      if ActiveRecord::VERSION::MAJOR >= 5 # Rails.version >= "5"
         scope1.or(scope2)
       else
         Heart.where(
