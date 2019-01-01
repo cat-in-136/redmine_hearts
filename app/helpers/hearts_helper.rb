@@ -84,8 +84,6 @@ module HeartsHelper
   end
 
   def link_to_heartable(object)
-    only_path = true
-
     case object
     when Board
       link_to h(object.name), project_board_url(object.project, object, :only_path => true)
