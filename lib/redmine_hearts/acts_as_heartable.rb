@@ -42,7 +42,6 @@ module Redmine
               joins(:hearts).
               where("#{Heart.table_name}.user_id = ?", user_id)
             }
-            attr_protected :heart_ids, :hearted_user_ids if method_defined? :attr_protected
           end
           send :include, Redmine::Acts::Heartable::InstanceMethods
         end

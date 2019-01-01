@@ -27,7 +27,6 @@ class Heart < ActiveRecord::Base
   validates_presence_of :user
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
   validate :validate_user
-  attr_protected :id if method_defined? :attr_protected
 
   scope :of_projects, lambda { |*args|
     projects = args.size > 0 ? args.shift : Project.none
