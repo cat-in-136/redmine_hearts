@@ -13,7 +13,7 @@ Redmine Hearts is a plugin which provides intra-Redmine Like/Fav reactions.
 
 === How to convert from other plugins
 
-Follow below steps to migrate from other plugins : 
+Follow below steps to migrate from other plugins :
 {Vote on Issues}[https://www.redmine.org/plugins/vote_on_issues].
 
 * Install this redmine_hearts plugin as described above.
@@ -24,8 +24,3 @@ Follow below steps to migrate from other plugins :
   * Restart your redmine
 
 Ditto {issue_votes}[https://github.com/KohaSuomi/issue_votes]. Run <code>bundle exec rake -T redmine_hearts:migrate_from</code> to check the task name.
-
-== Developing Note
-
-This project is currently under *alpha* stage of development.
-

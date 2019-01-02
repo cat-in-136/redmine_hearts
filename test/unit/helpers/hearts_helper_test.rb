@@ -182,13 +182,13 @@ class HeartsHelperTest < Redmine::HelperTest
 
 
   {
-    :board => "link_to 'Help', project_board_url(object.project, object)",
-    :issue => "link_to_issue(object)",
-    :message => "link_to_message(object)",
-    :news => "link_to 'eCookbook first release !', news_url(object)",
-    :wiki => "link_to 'Wiki', project_wiki_url(object.project)",
+    :board => "link_to 'Help', project_board_url(object.project, object, :only_path => true)",
+    :issue => "link_to_issue(object, :only_path => true)",
+    :message => "link_to_message(object, :only_path => true)",
+    :news => "link_to 'eCookbook first release !', news_url(object, :only_path => true)",
+    :wiki => "link_to 'Wiki', project_wiki_url(object.project, :only_path => true)",
     :wiki_page => "link_to 'CookBook_documentation', object",
-    :journal => "link_to_issue(object.issue) + ': ' + link_to('#1#note-1', issue_url(object.issue, :anchor => 'note-1'))",
+    :journal => "link_to_issue(object.issue, :only_path => true) + ': ' + link_to('#1#note-1', issue_url(object.issue, :anchor => 'note-1', :only_path => true))",
 
     :user => "link_to 'Redmine Admin', '/users/1'", # fallback to link_to object
     :project => "link_to 'eCookbook', '/projects/ecookbook'", # fallback to link_to object

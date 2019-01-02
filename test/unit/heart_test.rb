@@ -21,11 +21,15 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartTest < ActiveSupport::TestCase
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects, :users, :members, :member_roles, :roles, :enabled_modules,
            :issues, :issue_statuses, :enumerations, :trackers, :projects_trackers,
            :boards, :messages,
            :wikis, :wiki_pages,
-           :hearts
+           :news, :comments,
+           :journals, :journal_details
+  plugin_fixtures :hearts
 
   def setup
     @user = User.find(1)
@@ -111,6 +115,53 @@ class HeartTest < ActiveSupport::TestCase
     assert_nil issue.addable_hearted_users.detect {|user| !issue.visible?(user)}
   end
 
+  def test_scope_of_projects
+    objects = Heart.of_projects([Project.find(1)]).order(:id).to_a
+    assert_equal Heart.all.to_a, objects
+  end
+
+  def test_scope_of_projects_by_user
+    hearts_issue6 = Heart.new(:heartable => Issue.find(6), :user => User.find(1))
+    assert hearts_issue6.save(:validate => false)
+    hearts_issue14 = Heart.new(:heartable => Issue.find(14), :user => User.find(1))
+    assert hearts_issue14.save(:validate => false)
+
+    objects = Heart.of_projects(Project.all, User.find(1)).order(:id).to_a
+    assert_equal Heart.all.to_a, objects
+
+    objects = Heart.of_projects(Project.all, User.find(3)).order(:id).to_a
+    assert_equal Heart.where.not(:id => [hearts_issue6.id, hearts_issue14.id]).to_a, objects
+
+    assert hearts_issue6.destroy
+    assert hearts_issue14.destroy
+  end
+
+  def test_scope_of_projects_with_none_shall_return_none
+    objects = Heart.of_projects(Project.none).order(:id).to_a
+    assert_equal Heart.none, objects
+  end
+
+  def test_scope_of_projects_where_another_project
+    hearts_issue4 = Heart.new(:heartable => Issue.find(4), :user => User.find(1))
+    assert hearts_issue4.save(:validate => false)
+
+    objects = Heart.of_projects([Project.find(2)]).order(:id).to_a
+    assert_equal [hearts_issue4], objects
+
+    assert hearts_issue4.destroy
+  end
+
+  def test_scope_notifications_to
+    hearts_user1 = Heart.notifications_to(User.find(1))
+    assert_equal hearts(:hearts_002, :hearts_008).sort, hearts_user1.sort
+
+    hearts_user2 = Heart.notifications_to(User.find(2))
+    assert_equal hearts(:hearts_001, :hearts_003, :hearts_007).sort, hearts_user2.sort
+
+    hearts_user3 = Heart.notifications_to(User.find(3))
+    assert_equal [], hearts_user3.sort
+  end
+
   def test_any_hearted_should_return_false_if_no_object_is_hearted
     objects = (0..2).map {Issue.generate!}
 
@@ -141,16 +192,22 @@ class HeartTest < ActiveSupport::TestCase
     # public
     Heart.create!(:heartable => Issue.find(1), :user => user)
     Heart.create!(:heartable => Issue.find(2), :user => user)
+    Heart.create!(:heartable => Board.find(1), :user => user)
     Heart.create!(:heartable => Message.find(1), :user => user)
+    Heart.create!(:heartable => News.find(1), :user => user)
     Heart.create!(:heartable => Wiki.find(1), :user => user)
     Heart.create!(:heartable => WikiPage.find(2), :user => user)
+    Heart.create!(:heartable => Journal.find(1), :user => user)
 
     # private project (id: 2)
     Member.create!(:project => Project.find(2), :principal => user, :role_ids => [1])
     Heart.create!(:heartable => Issue.find(4), :user => user)
+    Heart.create!(:heartable => Board.find(3), :user => user)
     Heart.create!(:heartable => Message.find(7), :user => user)
+    Heart.create!(:heartable => News.find(3), :user => user)
     Heart.create!(:heartable => Wiki.find(2), :user => user)
     Heart.create!(:heartable => WikiPage.find(3), :user => user)
+    #Heart.create!(:heartable => Journal.find(_), :user => user)
 
     assert_no_difference 'Heart.count' do
       Heart.prune(:user => User.find(9))
@@ -158,7 +215,7 @@ class HeartTest < ActiveSupport::TestCase
 
     Member.delete_all
 
-    assert_difference 'Heart.count', -4 do
+    assert_difference 'Heart.count', -6 do
       Heart.prune(:user => User.find(9))
     end
 

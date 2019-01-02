@@ -20,10 +20,13 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedWikisTest < Redmine::IntegrationTest
-  fixtures :projects,
+  include Redmine::PluginFixtureSetLoader
+
+  fixtures :projects, :enabled_modules,
            :users,
-           :wikis, :wiki_pages, :wiki_contents, :wiki_content_versions,
-           :hearts
+           :roles, :member_roles, :members,
+           :wikis, :wiki_pages, :wiki_contents, :wiki_content_versions
+  plugin_fixtures :hearts
 
   def test_index_shall_not_contain_hooks
     get '/projects/ecookbook/wiki/index'
@@ -34,6 +37,8 @@ class HeartsHookedWikisTest < Redmine::IntegrationTest
   end
 
   def test_view
+    Heart.where(:heartable => WikiPage.find(1)).destroy_all
+
     get '/projects/ecookbook/wiki/CookBook_documentation'
     assert_response :success
     assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
@@ -46,7 +51,7 @@ class HeartsHookedWikisTest < Redmine::IntegrationTest
 
   def test_view_by_hearted_user
     log_user('dlopper', 'foo')
-    Heart.create!(:heartable => WikiPage.find(1), :user_id => 3)
+    #Heart.create!(:heartable => WikiPage.find(1), :user_id => 3)
 
     get '/projects/ecookbook/wiki/CookBook_documentation'
     assert_response :success

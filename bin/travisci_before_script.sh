@@ -16,9 +16,5 @@ bundle exec rake generate_secret_token
 bundle exec rake db:migrate
 bundle exec rake redmine:load_default_data
 
-# Copy assets & execute plugin's migration
-cp -r plugins/${PLUGIN_NAME}/test/fixtures/*.* test/fixtures
+# Execute plugin's migration
 bundle exec rake redmine:plugins NAME=${PLUGIN_NAME}
-
-# Start phantomjs
-phantomjs --webdriver 0.0.0.0:4444 >> phantomjs.log &

@@ -14,7 +14,8 @@
   }
 
   #history .journal .contextual .heart-link-with-count .heart-link-label,
-  .message.reply .contextual .heart-link-with-count .heart-link-label {
+  .message.reply .contextual .heart-link-with-count .heart-link-label,
+  .news-article .contextual .heart-link-with-count .heart-link-label {
     display: none;
   }
 }
@@ -37,6 +38,7 @@
 .recent-heart-list .heartable-link {
   margin-right: 1em;
 }
-.journal-heart-holder * {
+.journal-heart-holder *,
+.news-heart-holder * {
   display: none;
 }

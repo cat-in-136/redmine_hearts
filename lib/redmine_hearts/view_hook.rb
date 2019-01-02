@@ -59,6 +59,8 @@ class RedmineViewHookForDevHook < Redmine::Hook::ViewListener
       if model_klass && model_klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
         subject = controller.instance_variable_get("@#{controller.controller_name.singularize}")
       end
+    elsif ((controller.kind_of? NewsController) && (controller.action_name == 'index'))
+      subject = controller.instance_variable_get(:@newss)
     end
     subject
   end

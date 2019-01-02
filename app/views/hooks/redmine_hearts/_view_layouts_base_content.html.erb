@@ -1,5 +1,10 @@
 <%# frozen_string_literal: true %>
 <% self.class.send :include, HeartsHelper %>
+<% if ((controller.kind_of? NewsController) && (controller.action_name == 'index')) %>
+  <%= content_tag :div, :class => "news-heart-holder" do %>
+    <%= safe_join(multiple_heart_links_with_counters(@newss, User.current), '') %>
+  <% end if defined?(@newss) && @newss.any? %>
+<% else %>
 <% case @heartable %>
 <% when Issue %>
   <%= heart_link_with_counter @heartable, User.current %>
@@ -15,4 +20,5 @@
   <% end if defined?(@replies) && @replies.any? %>
 <% else %>
   <%= heart_link_with_counter @heartable, User.current %>
+<% end %>
 <% end %>

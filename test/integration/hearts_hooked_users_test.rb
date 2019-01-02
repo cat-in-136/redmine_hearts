@@ -20,9 +20,11 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedUsersTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects,
-           :users,
-           :hearts
+           :users
+  plugin_fixtures :hearts
 
   def test_show
     log_user('dlopper', 'foo')

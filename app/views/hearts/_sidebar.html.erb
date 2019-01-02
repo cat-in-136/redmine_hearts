@@ -1,0 +1,15 @@
+<%# frozen_string_literal: true %>
+
+<h3><%= l(:hearts_link_label) %></h3>
+
+<ul>
+  <% unless controller_name == "hearts" and action_name == "index" %>
+    <li><%= link_to l(:recently_hearted_objects), :controller => :hearts, :project => @project %></li>
+  <% end %>
+  <% unless controller_name == "hearts" and action_name == "notifications" %>
+    <li><%= link_to l(:hearts_notification_label), :controller => :hearts, :action => :notifications %></li>
+  <% end %>
+  <% unless controller_name == "hearts" and action_name == "hearted_by" and @user == User.current %>
+    <li><%= link_to l(:recently_hearted_by_me), :controller => :hearts, :action => :hearted_by, :user_id => User.current.id %></li>
+  <% end %>
+</ul>

@@ -22,10 +22,15 @@ class HeartsController < ApplicationController
 
   accept_api_auth :index, :heart, :unheart, :hearted_users
 
+  before_action :find_optional_project, :only => [:index]
+  before_action :require_login, :only => [:notifications, :heart, :unheart, :hearted_users]
+  before_action :find_user, :only => [:hearted_by]
+  before_action :find_heartables, :only => [:heart, :unheart, :hearted_users]
+
   def index
     @offset, @limit = api_offset_and_limit
 
-    scope = Heart.all
+    scope = Heart.of_projects(@project ? [@project] : Project.visible, User.current)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
     scope = scope.group(:heartable_type, :heartable_id)
     @scope_count = scope.pluck(1).count
@@ -45,7 +50,28 @@ class HeartsController < ApplicationController
     end
   end
 
-  before_action :require_login, :find_user, :only => [:hearted_by]
+  def notifications
+    @offset, @limit = api_offset_and_limit
+    @user = User.current
+
+    scope = Heart.notifications_to(@user)
+    scope = scope.where.not(:user => User.current) unless params["including_myself"]
+    scope = scope.group(:heartable_type, :heartable_id)
+    @scope_count = scope.pluck(1).count
+    @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
+    @offset ||= @hearts_pages.offset
+
+    @heartables = scope.
+      order(:created_at => :desc).
+      limit(@limit).
+      offset(@offset).
+      includes(:heartable).
+      map(&:heartable)
+
+    respond_to do |format|
+      format.html
+    end
+  end
 
   def hearted_by
     @offset, @limit = api_offset_and_limit
@@ -67,8 +93,6 @@ class HeartsController < ApplicationController
     end
   end
 
-  before_action :require_login, :find_heartables, :only => [:heart, :unheart, :hearted_users]
-
   def heart
     set_heart(@heartables, User.current, true)
   end
@@ -85,6 +109,13 @@ class HeartsController < ApplicationController
   end
 
   private
+
+  def find_optional_project
+    @project = Project.find(params[:project_id]) unless params[:project_id].blank?
+    check_project_privacy if @project
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
 
   def find_project
     if params[:object_type] && params[:object_id]

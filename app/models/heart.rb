@@ -27,7 +27,72 @@ class Heart < ActiveRecord::Base
   validates_presence_of :user
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
   validate :validate_user
-  attr_protected :id
+
+  scope :of_projects, lambda { |*args|
+    projects = args.size > 0 ? args.shift : Project.none
+    user = args.size > 0 ? args.shift : nil
+    raise ArgumentError if args.size > 0
+
+    ActiveRecord::Base.subclasses.select { |klass|
+      klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+    }.map { |klass|
+      if user && klass.respond_to?(:visible)
+        heartables = klass.visible(user)
+      else
+        heartables = klass.all
+      end
+
+      heartables = heartables.joins(klass.heartable_options[:joins]) if klass.heartable_options.include?(:joins)
+      if klass.heartable_options[:project_key].kind_of? Proc
+        heartables = klass.heartable_options[:project_key].call(heartables, projects)
+      else
+        heartables = heartables.where("#{klass.heartable_options[:project_key]} IN (?)", projects.map(&:id))
+      end
+      Heart.where(:heartable => heartables)
+    }.reduce { |scope1, scope2|
+      if ActiveRecord::VERSION::MAJOR >= 5 # Rails.version >= "5"
+        scope1.or(scope2)
+      else
+        Heart.where(
+          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+          )
+        ).tap { |scope12|
+          scope12.bind_values = scope1.bind_values + scope2.bind_values
+        }
+      end
+    }
+  }
+
+  scope :notifications_to, lambda { |user|
+    raise ArgumentError unless user
+
+    ActiveRecord::Base.subclasses.select { |klass|
+      klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+    }.select { |klass|
+      klass.column_names.include?("author_id") || klass.column_names.include?("user_id")
+    }.map { |klass|
+      if klass.column_names.include?("author_id")
+        Heart.where(:heartable => klass.where(:author_id => user.id))
+      elsif klass.column_names.include?("user_id")
+        Heart.where(:heartable => klass.where(:user_id => user.id))
+      else
+        Heart.none
+      end
+    }.reduce { |scope1, scope2|
+      if Rails.version >= "5"
+        scope1.or(scope2)
+      else
+        Heart.where(
+          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
+            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
+          )
+        ).tap { |scope12|
+          scope12.bind_values = scope1.bind_values + scope2.bind_values
+        }
+      end
+    }
+  }
 
   def self.any_hearted?(objects, user)
     objects = objects.reject(&:new_record?)

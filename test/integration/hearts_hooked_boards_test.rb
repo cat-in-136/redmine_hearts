@@ -20,10 +20,12 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedBoardsTest < Redmine::IntegrationTest
-  fixtures :projects,
+  include Redmine::PluginFixtureSetLoader
+
+  fixtures :projects, :enabled_modules,
            :users,
-           :boards, :messages,
-           :hearts
+           :boards, :messages
+  plugin_fixtures :hearts
 
   def test_index_shall_not_contain_hooks
     get '/projects/1/boards/'
@@ -40,11 +42,11 @@ class HeartsHookedBoardsTest < Redmine::IntegrationTest
     assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
 
     assert_select '#content > .heart-link-with-count.message-1-heart', :count => 1
-    assert_select '#content > .heart-link-with-count.message-1-heart span.heart-count-number', :text => "1"
-    assert_select '#content > .heart-link-with-count.message-2-heart', :count => 1
-    assert_select '#content > .heart-link-with-count.message-2-heart span.heart-count-number', :text => "0"
-    assert_select '#content > .heart-link-with-count.message-3-heart', :count => 1
-    assert_select '#content > .heart-link-with-count.message-3-heart span.heart-count-number', :text => "0"
+    assert_select '#content > .heart-link-with-count.message-1-heart .heart-count-number', :text => "1"
+    assert_select '.replies-heart-holder > .heart-link-with-count.message-2-heart', :count => 1
+    assert_select '.replies-heart-holder > .heart-link-with-count.message-2-heart .heart-count-number', :text => "0"
+    assert_select '.replies-heart-holder > .heart-link-with-count.message-3-heart', :count => 1
+    assert_select '.replies-heart-holder > .heart-link-with-count.message-3-heart .heart-count-number', :text => "0"
     assert_select '.heart-link-with-count', :count => 3
   end
 

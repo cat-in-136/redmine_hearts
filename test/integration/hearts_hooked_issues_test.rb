@@ -20,10 +20,24 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedIssuesTest < Redmine::IntegrationTest
+  include Redmine::PluginFixtureSetLoader
+
   fixtures :projects,
            :users,
-           :issues, :journals,
-           :hearts
+           :members,
+           :member_roles,
+           :roles,
+           :trackers,
+           :projects_trackers,
+           :enabled_modules,
+           :issue_statuses,
+           :issues,
+           :journals,
+           :enumerations,
+           :custom_fields,
+           :custom_values,
+           :custom_fields_trackers
+  plugin_fixtures :hearts
 
   def test_index_shall_not_contain_hooks
     get '/projects/1/issues/'
@@ -31,6 +45,14 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
     assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 0
     assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 0
     assert_select '.heart-link-with-count', :count => 0
+  end
+
+  def test_index_with_heart_column
+    get '/issues?set_filter=1&sort=hearts.count:desc,id&c[]=subject&c[]=hearts.count'
+    assert_response :success
+    assert_select 'thead > tr > th:nth-child(4)', :text => 'Like'
+    assert_select 'td.id', :text => '5'
+    assert_select 'tbody > tr#issue-2:first-child td.hearts-count', :text => '2'
   end
 
   def test_view
@@ -42,7 +64,7 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
     assert_select '#content > .heart-link-with-count.issue-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.issue-1-heart span.heart-count-number', :text => "0"
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart', :count => 1
-    assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart span.heart-count-number', :text => "0"
+    assert_select '.journal-heart-holder > .heart-link-with-count.journal-1-heart span.heart-count-number', :text => "1"
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-2-heart', :count => 1
     assert_select '.journal-heart-holder > .heart-link-with-count.journal-2-heart span.heart-count-number', :text => "0"
     assert_select '.heart-link-with-count', :count => 3
@@ -65,7 +87,9 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
   def test_view_with_private_notes
     Journal.where(:journalized => Issue.find(1)).delete_all
     30.times do |idx|
-      Journal.create!(:user_id => 3, :journalized => Issue.find(1), :notes => "foobarbaz", :private_notes => (idx % 10 == 1))
+      journal = Journal.new(:user_id => 3, :journalized => Issue.find(1), :notes => "foobarbaz", :private_notes => (idx % 10 == 1))
+      journal.notify = false # to suppress email notification
+      journal.save
     end
 
     get '/issues/1'

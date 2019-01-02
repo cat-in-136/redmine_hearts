@@ -1,16 +1,21 @@
 $(function() {
   "use strict";
 
-  $(".journal-heart-holder > .heart-link-with-count").each(function () {
-    let link = this;
+  function getHeartableSubject(link) {
     let heartable_subject;
-    let num_insert = 0;
     $.each(link.classList, function () {
       let klass = this;
       if (/^([-a-z0-9]+-[0-9]+)-heart$/.test(klass)) {
         heartable_subject = RegExp.$1;
       }
     });
+    return heartable_subject;
+  }
+
+  $(".journal-heart-holder > .heart-link-with-count").each(function () {
+    let link = this;
+    let heartable_subject = getHeartableSubject(link);
+    let num_insert = 0;
 
     if (num_insert === 0) {
       let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "journal-") + "-notes";
@@ -28,14 +33,8 @@ $(function() {
   });
   $("#content > .heart-link-with-count, #main > .heart-link-with-count, .replies-heart-holder > .heart-link-with-count").each(function () {
     let link = this;
-    let heartable_subject;
+    let heartable_subject = getHeartableSubject(link);
     let num_insert = 0;
-    $.each(link.classList, function () {
-      let klass = this;
-      if (/^([-a-z0-9]+-[0-9]+)-heart$/.test(klass)) {
-        heartable_subject = RegExp.$1;
-      }
-    });
 
     // insert immediate after the corresponding watcher links.
     if (num_insert === 0) {
@@ -51,6 +50,27 @@ $(function() {
     // append to contextual of the children of the content.
     if (num_insert === 0) {
       num_insert += $(link).appendTo("#content > .contextual").length;
+    }
+
+    if (num_insert === 0) {
+      console.debug("Failed to transplant : ." + heartable_subject + "-heart");
+    }
+  });
+  $(".news-heart-holder > .heart-link-with-count").each(function () {
+    let link = this;
+    let heartable_subject = getHeartableSubject(link);
+    let num_insert = 0;
+
+    if (num_insert === 0) {
+      let newsLink = $(".news-article header a[href$=\"/" + heartable_subject.replace("-", "/") + "\"]");
+      if (newsLink.length > 0) {
+        let context = $(".contextual", newsLink.parent().parent());
+        if (content.length > 0) {
+          num_insert += $(link).appendTo(context).length;
+        } else {
+          num_insert += $('<div class="contextual"></div>').append(link).appendTo(newsLink.parent().parent()).length;
+        }
+      }
     }
 
     if (num_insert === 0) {

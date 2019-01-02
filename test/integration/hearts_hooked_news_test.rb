@@ -20,20 +20,30 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class HeartsHookedNewsTest < Redmine::IntegrationTest
-  fixtures :projects,
-           :users,
-           :news,
-           :hearts
+  include Redmine::PluginFixtureSetLoader
 
-  def test_index_shall_not_contain_hooks
+  fixtures :projects, :enabled_modules,
+           :users,
+           :roles, :member_roles, :members,
+           :news
+  plugin_fixtures :hearts
+
+  def test_index
     get '/news/'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 0
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 0
-    assert_select '.heart-link-with-count', :count => 0
+    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
+    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+
+    assert_select '.heart-link-with-count', :count => 2
+    assert_select '#content .news-heart-holder .heart-link-with-count.news-2-heart', :count => 1
+    assert_select '#content .news-heart-holder .heart-link-with-count.news-2-heart span.heart-count-number', :text => "0"
+    assert_select '#content .news-heart-holder .heart-link-with-count.news-1-heart', :count => 1
+    assert_select '#content .news-heart-holder .heart-link-with-count.news-1-heart span.heart-count-number', :text => "1"
   end
 
   def test_view
+    Heart.where(:heartable => News.find(1)).destroy_all
+
     get '/news/1'
     assert_response :success
     assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
@@ -45,7 +55,7 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
 
   def test_view_by_hearted_user
     log_user('dlopper', 'foo')
-    Heart.create!(:heartable => News.find(1), :user_id => 3)
+    #Heart.create!(:heartable => News.find(1), :user_id => 3)
 
     get '/news/1'
     assert_response :success

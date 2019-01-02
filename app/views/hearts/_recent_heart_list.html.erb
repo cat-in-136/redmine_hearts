@@ -1,0 +1,35 @@
+<%# frozen_string_literal: true %>
+<% if @heartables.empty? %>
+  <p class="nodata"><%=l :label_no_data %></p>
+<% else %>
+  <% hearts_grouped = Heart.hearts_to(@heartables).
+      order(:created_at => :desc).
+      preload(:user => :email_address).
+      group_by { |v| [v.heartable_type, v.heartable_id] } %>
+  <ul class="recent-heart-list">
+  <% @heartables.each do |heartable| %>
+    <% hearts = hearts_grouped[[heartable.class.base_class.name, heartable.id]] || [] %>
+    <li>
+      <div>
+        <span class="heartable-link">
+          <%= link_to_project(heartable.project) + ": " %>
+          <%= link_to_heartable heartable %>
+        </span>
+        <% heart_bool = hearts.any? { |v| v.user_id == User.current.id } %>
+        <% hearted_users_count = hearts.length %>
+        <%= heart_link_with_counter_manual heartable, heart_bool, hearted_users_count, User.current %>
+      </div>
+      <ul>
+        <% hearts = hearts.reject { |v| v[:user_id] == User.current.id } unless params["including_myself"] %>
+        <% hearts.each do |heart| %>
+          <li class="author">
+            <%= avatar(heart.user, :size => "24") %>
+            <%= authoring heart.created_at, heart.user, :label => :label_hearted_time_by %>
+          </li>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+  </ul>
+  <span class="pagination"><%= pagination_links_full @hearts_pages %></span>
+<% end %>
