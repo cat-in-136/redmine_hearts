@@ -18,6 +18,10 @@ $(function() {
     let num_insert = 0;
 
     if (num_insert === 0) {
+      let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "note-");
+      num_insert += $(link).prependTo($("#" + note_subject + " .journal-actions")).length;
+    }
+    if (num_insert === 0) {
       let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "journal-") + "-notes";
       num_insert += $(link).insertBefore($("#" + note_subject + " .contextual :first-child")).length;
     }
