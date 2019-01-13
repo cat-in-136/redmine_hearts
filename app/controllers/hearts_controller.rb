@@ -32,13 +32,13 @@ class HeartsController < ApplicationController
 
     scope = Heart.of_projects(@project ? [@project] : Project.visible, User.current)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
-    scope = scope.group(:heartable_type, :heartable_id)
-    @scope_count = scope.pluck(1).count
+    scope = scope.select(:heartable_type, :heartable_id).group(:heartable_type, :heartable_id)
+    scope = scope.order(Arel.sql("MAX(created_at) DESC"))
+    @scope_count = Heart.from(scope, :hearts).count
     @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
     @offset ||= @hearts_pages.offset
 
     @heartables = scope.
-      order(:created_at => :desc).
       limit(@limit).
       offset(@offset).
       includes(:heartable).
@@ -56,13 +56,13 @@ class HeartsController < ApplicationController
 
     scope = Heart.notifications_to(@user)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
-    scope = scope.group(:heartable_type, :heartable_id)
-    @scope_count = scope.pluck(1).count
+    scope = scope.select(:heartable_type, :heartable_id).group(:heartable_type, :heartable_id)
+    scope = scope.order(Arel.sql("MAX(created_at) DESC"))
+    @scope_count = Heart.from(scope, :hearts).count
     @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
     @offset ||= @hearts_pages.offset
 
     @heartables = scope.
-      order(:created_at => :desc).
       limit(@limit).
       offset(@offset).
       includes(:heartable).
