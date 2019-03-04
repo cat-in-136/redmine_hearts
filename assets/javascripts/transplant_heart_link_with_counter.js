@@ -17,8 +17,10 @@ $(function() {
     let heartable_subject = getHeartableSubject(link);
     let num_insert = 0;
 
+    console.debug({heartable_subject, link});
+
     if (num_insert === 0) {
-      let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "note-");
+      let note_subject = heartable_subject.replace(/^[-a-z0-9]+-/, "change-");
       num_insert += $(link).prependTo($("#" + note_subject + " .journal-actions")).length;
     }
     if (num_insert === 0) {
