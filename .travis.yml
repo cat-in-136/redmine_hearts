@@ -5,16 +5,21 @@ cache:
   - redmine/vendor/bundle
 matrix:
   include:
-  - rvm: 2.6.1
-    env: REDMINE_VERSION=4.0.2
-  - rvm: 2.5.3
-    env: REDMINE_VERSION=4.0.2
-  - rvm: 2.5.3
-    env: REDMINE_VERSION=3.4.9
-  - rvm: 2.4.5
-    env: REDMINE_VERSION=3.4.9
+  - rvm: ruby-head
+    env: REDMINE_VERSION=master
+  - rvm: 2.6.3
+    env: REDMINE_VERSION=4.0.3
+  - rvm: 2.5.5
+    env: REDMINE_VERSION=4.0.3
+  - rvm: 2.5.5
+    env: REDMINE_VERSION=3.4.10
+  - rvm: 2.4.6
+    env: REDMINE_VERSION=3.4.10
   - rvm: 2.3.8
-    env: REDMINE_VERSION=3.4.9
+    env: REDMINE_VERSION=3.4.10
+  allow_failures:
+  - rvm: ruby-head
+    env: REDMINE_VERSION=master
 before_install: bash -x bin/travisci_before_install.sh
 before_script: bash -x bin/travisci_before_script.sh
 script: bash -x bin/travisci_exec_test.sh
