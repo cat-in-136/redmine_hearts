@@ -9,7 +9,7 @@ PLUGIN_NAME=redmine_hearts
 
 # https://www.redmine.org/issues/30353
 if [ "v${REDMINE_VERSION:0:2}" = "v3." ]; then
-  gem uninstall bundler -v ">= 2.0" 
+  rvm @global do gem uninstall bundler -v ">= 2.0" 
   gem install bundler -v "< 2.0" 
 fi
 
