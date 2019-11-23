@@ -8,6 +8,8 @@ matrix:
   - rvm: ruby-head
     env: REDMINE_VERSION=master
   - rvm: 2.6.5
+    env: REDMICA_VERSION=1.0.1
+  - rvm: 2.6.5
     env: REDMINE_VERSION=4.0.5
   - rvm: 2.5.7
     env: REDMINE_VERSION=4.0.5
