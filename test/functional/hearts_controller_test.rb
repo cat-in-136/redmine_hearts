@@ -387,8 +387,7 @@ class HeartsControllerTest < ActionController::TestCase
           :key => User.find(3).api_key,
         )
       end
-      assert_response :success
-      assert_equal 'application/json', @response.content_type
+      assert_response :no_content
     end
     assert Issue.find(1).hearted_by?(User.find(3))
   end
@@ -444,8 +443,7 @@ class HeartsControllerTest < ActionController::TestCase
           :key => User.find(3).api_key,
         )
       end
-      assert_response :success
-      assert_equal 'application/json', @response.content_type
+      assert_response :no_content
     end
     refute Issue.find(2).hearted_by?(User.find(3))
   end
