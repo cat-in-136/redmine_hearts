@@ -21,7 +21,7 @@ if [ "x${REDMICA_VERSION}" != "x" ]; then
   mv redmica redmine
 else
   git clone -b ${REDMINE_VERSION} --depth=1 https://github.com/redmine/redmine.git
-else
+fi
 
 # Restore the cache if exists
 if [ -d /tmp/vendor ]; then
