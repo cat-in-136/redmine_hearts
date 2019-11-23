@@ -146,7 +146,7 @@ class HeartsController < ApplicationController
         redirect_to_referer_or {render :html => text, :status => 200, :layout => true}
       }
       format.js { render :partial => 'set_heart', :locals => {:user => user, :hearted => heartables} }
-      format.api { render_api_ok }
+      format.api { render_api_head :no_content } # api_ok
     end
   end
 

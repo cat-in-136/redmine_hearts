@@ -16,7 +16,12 @@ cp -pr . /tmp/${PLUGIN_NAME}
 if [ -d redmine ]; then
   rm -rf redmine
 fi
-git clone -b ${REDMINE_VERSION} --depth=1 https://github.com/redmine/redmine.git
+if [ "x${REDMICA_VERSION}" != "x" ]; then
+  git clone -b v${REDMICA_VERSION} --depth=1 https://github.com/redmica/redmica.git
+  mv redmica redmine
+else
+  git clone -b ${REDMINE_VERSION} --depth=1 https://github.com/redmine/redmine.git
+fi
 
 # Restore the cache if exists
 if [ -d /tmp/vendor ]; then
