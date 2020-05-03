@@ -9,8 +9,8 @@ matrix:
     env: REDMINE_VERSION=master
   - rvm: 2.7.1
     env: REDMICA_VERSION=1.0.1
-  - rvm: 2.7.1
-    env: REDMINE_VERSION=4.1.1
+#  - rvm: 2.7.1
+#    env: REDMINE_VERSION=4.1.1
   - rvm: 2.6.6
     env: REDMINE_VERSION=4.1.1
   - rvm: 2.6.6
