@@ -96,7 +96,7 @@ module HeartsHelper
     when WikiPage
       link_to h(object.title), object
     when Journal
-      journal_indice = object.issue.journals.reorder(:created_on, :id).ids.index(object.id) + 1
+      journal_indice = object.indice || object.issue.visible_journals_with_index.find{|j| j.id == object.id}.indice
       safe_join([
         link_to_issue(object.issue),
         ": ",
@@ -124,7 +124,7 @@ module HeartsHelper
       api.journalized do
         api.type heartable.journalized_type
         api.id heartable.journalized_id
-        api.note_index heartable.issue.journals.reorder(:created_on, :id).ids.index(heartable.id) + 1
+        api.note_index(heartable.indice || heartable.issue.visible_journals_with_index.find{|j| j.id == heartable.id}.indice)
       end
     end
   end
