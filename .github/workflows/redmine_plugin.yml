@@ -1,0 +1,27 @@
+name: Redmine Plugin
+
+on: [push, pull_request]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby:
+          - 2.6
+        redmine_version:
+          - 4.1.1
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Before install
+      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_before_install.sh
+    - name: Before script
+      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_before_script.sh
+    - name: Run tests
+      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_exec_test.sh
