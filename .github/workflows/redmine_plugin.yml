@@ -6,22 +6,89 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: false
       matrix:
-        ruby:
-          - 2.6
-        redmine_version:
-          - 4.1.1
-
+        mat_env:
+        - '2.7 redmica/redmica@master'
+        - '2.7 redmica/redmica@v1.0.1'
+        #- '2.7 redmine/redmine@4.1.1'
+        - '2.6 redmine/redmine@4.1.1'
+        - '2.6 redmine/redmine@4.0.7'
+        - '2.5 redmine/redmine@4.0.7'
+        #- '2.5 redmine/redmine@3.4.12'
+        #- '2.4 redmine/redmine@3.4.12'
+        #- '2.3 redmine/redmine@3.4.12'
+        experimental: [false]
+        include:
+          - mat_env: '2.7 redmica/redmica@master'
+            experimental: true
     steps:
-    - uses: actions/checkout@v2
+    - run: |
+        echo PLUGIN_NAME=$PLUGIN_NAME >> $GITHUB_ENV
+        echo RUBY_VERSION=$(echo $MAT_ENV | cut -d' ' -f1) >> $GITHUB_ENV
+        echo REDMINE_REPOSITORY=$(echo $MAT_ENV | cut -d' ' -f2 | cut -d@ -f1) >> $GITHUB_ENV
+        echo REDMINE_REF=$(echo $MAT_ENV | cut -d' ' -f2 | cut -d@ -f2) >> $GITHUB_ENV
+      env:
+        PLUGIN_NAME: redmine_hearts
+        MAT_ENV: ${{ matrix.mat_env }}
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.ruby }}
-    - name: Before install
-      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_before_install.sh
+        ruby-version: ${{ env.RUBY_VERSION }}
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: ./${{ env.PLUGIN_NAME }}
+    - name: Set up Redmine
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ env.REDMINE_REPOSITORY }}
+        ref: ${{ env.REDMINE_REF }}
+        path: ./redmine
+
+    - name: Copy the plugin files to plugin directory
+      run: cp -pr ./${{ env.PLUGIN_NAME }} ./redmine/plugins/${{ env.PLUGIN_NAME }}
+    - name: Create redmine/config/database.yml
+      uses: DamianReeves/write-file-action@v1.0
+      with:
+        path: ./redmine/config/database.yml
+        contents: |
+          test:
+            adapter: sqlite3
+            database: db/redmine_test.db
+
+    - uses: actions/cache@v2
+      with:
+        path: ./redmine/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
     - name: Before script
-      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_before_script.sh
-    - name: Run tests
-      run: REDMINE_VERSION=${{ matrix.redmine_version }} bash -x bin/travisci_exec_test.sh
+      run: |
+        cd ./redmine
+        bundle install --path=${BUNDLE_PATH:-vendor/bundle}
+        
+        mv plugins plugins_bak
+        # Initialize redmine
+        bundle exec rake generate_secret_token
+        bundle exec rake db:migrate
+        bundle exec rake redmine:load_default_data
+        mv plugins_bak plugins
+        
+        # Execute plugin's migration
+        bundle exec rake redmine:plugins NAME=${{ env.PLUGIN_NAME }}
+      env:
+        REDMINE_LANG: en
+        RAILS_ENV: test
+    - name: Execute test
+      run: |
+        cd ./redmine
+        # Execute plugin's test
+        bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
+      env:
+        REDMINE_LANG: en
+        RAILS_ENV: test
