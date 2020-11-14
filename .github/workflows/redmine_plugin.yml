@@ -1,0 +1,111 @@
+name: Redmine Plugin
+
+on: [push, pull_request]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        mat_env:
+        - '2.7 redmica/redmica@master'
+        - '2.7 redmica/redmica@v1.0.1'
+        #- '2.7 redmine/redmine@4.1.1' # ruby 2.7 is not supported in redmine4.1
+        - '2.6 redmine/redmine@4.1.1'
+        - '2.6 redmine/redmine@4.0.7'
+        - '2.5 redmine/redmine@4.0.7'
+        #- '2.5 redmine/redmine@3.4.12' # skip due to bundler error
+        #- '2.4 redmine/redmine@3.4.12' # skip due to bundler error
+        - '2.3 redmine/redmine@3.4.12'
+        experimental: [false]
+        include:
+          - mat_env: '2.7 redmica/redmica@master'
+            experimental: true
+    steps:
+    - run: |
+        echo PLUGIN_NAME=$PLUGIN_NAME >> $GITHUB_ENV
+        echo RUBY_VERSION=$(echo $MAT_ENV | cut -d' ' -f1) >> $GITHUB_ENV
+        echo REDMINE_REPOSITORY=$(echo $MAT_ENV | cut -d' ' -f2 | cut -d@ -f1) >> $GITHUB_ENV
+        echo REDMINE_REF=$(echo $MAT_ENV | cut -d' ' -f2 | cut -d@ -f2) >> $GITHUB_ENV
+      env:
+        PLUGIN_NAME: redmine_hearts
+        MAT_ENV: ${{ matrix.mat_env }}
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ env.RUBY_VERSION }}
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: ./${{ env.PLUGIN_NAME }}
+    - name: Set up Redmine
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ env.REDMINE_REPOSITORY }}
+        ref: ${{ env.REDMINE_REF }}
+        path: ./redmine
+
+    - name: Copy the plugin files to plugin directory
+      run: cp -pr ./${{ env.PLUGIN_NAME }} ./redmine/plugins/${{ env.PLUGIN_NAME }}
+    - name: Create redmine/config/database.yml
+      uses: DamianReeves/write-file-action@v1.0
+      with:
+        path: ./redmine/config/database.yml
+        contents: |
+          test:
+            adapter: sqlite3
+            database: db/redmine_test.db
+
+    - uses: actions/cache@v2
+      with:
+        path: ./redmine/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+    - name: Before script
+      run: |
+        cd ./redmine
+        bundle install --path=${BUNDLE_PATH:-vendor/bundle}
+        
+        mv plugins plugins_bak
+        # Initialize redmine
+        bundle exec rake generate_secret_token
+        bundle exec rake db:migrate
+        bundle exec rake redmine:load_default_data
+        mv plugins_bak plugins
+        
+        # Execute plugin's migration
+        bundle exec rake redmine:plugins NAME=${{ env.PLUGIN_NAME }}
+      env:
+        REDMINE_LANG: en
+        RAILS_ENV: test
+
+    # HACK sometimes fails login error, so retry 10 times
+    # HACK use shell script file to avoid interruption by error
+    - name: Prepare test script
+      uses: DamianReeves/write-file-action@v1.0
+      with:
+        path: ./run_test.sh
+        contents: |
+          #!/bin/sh
+          cd ./redmine
+          for i in `seq 0 9`; do
+            # Execute plugin's test
+            bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
+            retval=$?
+            if [ "$retval" -eq 0 ]; then
+              break
+            fi
+            echo "${i}-th test failed; Retry test..."
+          done
+          exit $retval
+    - name: Execute test
+      run: sh ./run_test.sh
+      env:
+        REDMINE_LANG: en
+        RAILS_ENV: test
