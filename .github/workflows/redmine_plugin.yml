@@ -13,13 +13,13 @@ jobs:
         mat_env:
         - '2.7 redmica/redmica@master'
         - '2.7 redmica/redmica@v1.0.1'
-        #- '2.7 redmine/redmine@4.1.1'
+        #- '2.7 redmine/redmine@4.1.1' # ruby 2.7 is not supported in redmine4.1
         - '2.6 redmine/redmine@4.1.1'
         - '2.6 redmine/redmine@4.0.7'
         - '2.5 redmine/redmine@4.0.7'
-        #- '2.5 redmine/redmine@3.4.12'
-        #- '2.4 redmine/redmine@3.4.12'
-        #- '2.3 redmine/redmine@3.4.12'
+        #- '2.5 redmine/redmine@3.4.12' # skip due to bundler error
+        #- '2.4 redmine/redmine@3.4.12' # skip due to bundler error
+        - '2.3 redmine/redmine@3.4.12'
         experimental: [false]
         include:
           - mat_env: '2.7 redmica/redmica@master'
@@ -84,11 +84,28 @@ jobs:
       env:
         REDMINE_LANG: en
         RAILS_ENV: test
+
+    # HACK sometimes fails login error, so retry 10 times
+    # HACK use shell script file to avoid interruption by error
+    - name: Prepare test script
+      uses: DamianReeves/write-file-action@v1.0
+      with:
+        path: ./run_test.sh
+        contents: |
+          #!/bin/sh
+          cd ./redmine
+          for i in `seq 0 9`; do
+            # Execute plugin's test
+            bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
+            retval=$?
+            if [ "$retval" -eq 0 ]; then
+              break
+            fi
+            echo "${i}-th test failed; Retry test..."
+          done
+          exit $retval
     - name: Execute test
-      run: |
-        cd ./redmine
-        # Execute plugin's test
-        bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
+      run: sh ./run_test.sh
       env:
         REDMINE_LANG: en
         RAILS_ENV: test
