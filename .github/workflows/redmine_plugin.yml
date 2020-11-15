@@ -11,7 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         mat_env:
-        - '2.7 redmica/redmica@master'
         - '2.7 redmica/redmica@v1.0.1'
         #- '2.7 redmine/redmine@4.1.1' # ruby 2.7 is not supported in redmine4.1
         - '2.6 redmine/redmine@4.1.1'
