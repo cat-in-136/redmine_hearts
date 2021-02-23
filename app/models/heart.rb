@@ -28,7 +28,7 @@ class Heart < ActiveRecord::Base
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
   validate :validate_user
 
-  scope :of_projects, lambda { |*args|
+  def self.of_projects(*args)
     projects = args.size > 0 ? args.shift : Project.none
     user = args.size > 0 ? args.shift : nil
     raise ArgumentError if args.size > 0
@@ -62,9 +62,9 @@ class Heart < ActiveRecord::Base
         }
       end
     }
-  }
+  end
 
-  scope :notifications_to, lambda { |user|
+  def self.notifications_to(user)
     raise ArgumentError unless user
 
     ActiveRecord::Base.subclasses.select { |klass|
@@ -92,7 +92,7 @@ class Heart < ActiveRecord::Base
         }
       end
     }
-  }
+  end
 
   def self.any_hearted?(objects, user)
     objects = objects.reject(&:new_record?)
