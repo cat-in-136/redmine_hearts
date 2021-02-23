@@ -48,6 +48,60 @@ class HeartsControllerTest < ActionController::TestCase
     @request.session[:user_id] = 3
     get :index
     assert_response :success
+    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
+    assert_select '#content > .nodata', {:count => 1}
+  end
+
+  def test_index_including_myself
+    @request.session[:user_id] = 3
+    get :index, params(:including_myself => true)
+    assert_response :success
+    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
+    assert_select '[name="including_myself"][checked]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li', {:count => 4}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
+  end
+
+  def test_project_index
+    @request.session[:user_id] = 3
+    get :index, params(:project_id => 1)
+    assert_response :success
+    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
+    assert_select '#content > .nodata', {:count => 1}
+  end
+
+  def test_project_index_including_myself
+    @request.session[:user_id] = 3
+    get :index, params(:project_id => 1, :including_myself => true)
+    assert_response :success
+    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
+    assert_select '[name="including_myself"][checked]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li', {:count => 4}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
+  end
+
+  def test_project_index_with_invalid_project_id_should_respond_404
+    @request.session[:user_id] = 3
+    get :index, params(:project_id => 299)
+    assert_response 404
+  end
+
+=begin
+
     assert_select '#content > ul.recent-heart-list > li', {:count => 2}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/1"]', {:count => 1}
@@ -77,141 +131,6 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/users/1"]', {:count => 1}
   end
 
-  def test_index_as_api
-    with_settings :rest_api_enabled => '1' do
-      get :index, params(
-        :format => 'json',
-        :key => User.find(3).api_key,
-      )
-    end
-    assert_response :success
-    assert_equal 'application/json', @response.content_type
-
-    response_as_json = JSON.parse(@response.body)
-    expected = {"heartables" => [
-      {"object_type" => "message",
-       "object_id" => 1,
-       "subject" => "First post",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 1, "name" => "Redmine Admin"},
-                     "created_at" => "2007-05-13T16:16:33Z"}]},
-      {"object_type" => "issue",
-       "object_id" => 2,
-       "subject" => "Add ingredients categories",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 2,
-       "hearts" => [{"user" => {"id" => 1, "name" => "Redmine Admin"},
-                     "created_at" => "2006-07-20T20:10:51Z"}]},
-    ],
-                "total_count" => 2,
-                "offset" => 0,
-                "limit" => 25,
-                "including_myself" => false}
-    assert_equal expected, response_as_json
-  end
-
-  def test_index_including_myself_as_api
-    with_settings :rest_api_enabled => '1' do
-      get :index, params(
-        :format => 'json',
-        :key => User.find(3).api_key,
-        :including_myself => true,
-      )
-    end
-    assert_response :success
-    assert_equal 'application/json', @response.content_type
-
-    response_as_json = JSON.parse(@response.body)
-    expected = {"heartables" => [
-      {"object_type" => "board",
-       "object_id" => 1,
-       "name" => "Help",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-10-01T10:34:04Z"}]},
-      {"object_type" => "journal",
-       "object_id" => 1,
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-05-05T10:34:08Z"}]},
-      {"object_type" => "news",
-       "object_id" => 1,
-       "title" => "eCookbook first release !",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-05-04T10:34:07Z"}]},
-      {"object_type" => "wikipage",
-       "object_id" => 1,
-       "title" => "CookBook_documentation",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-05-03T10:34:06Z"}]},
-      {"object_type" => "wiki",
-       "object_id" => 1,
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-01-02T10:34:05Z"}]},
-      {"object_type" => "message",
-       "object_id" => 1,
-       "subject" => "First post",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 1, "name" => "Redmine Admin"},
-                     "created_at" => "2007-05-13T16:16:33Z"}]},
-      {"object_type" => "issue",
-       "object_id" => 2,
-       "subject" => "Add ingredients categories",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 2,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2006-07-21T20:10:51Z"},
-                    {"user" => {"id" => 1, "name" => "Redmine Admin"},
-                     "created_at" => "2006-07-20T20:10:51Z"}]},
-    ],
-                "total_count" => 7,
-                "offset" => 0,
-                "limit" => 25,
-                "including_myself" => true}
-    assert_equal expected, response_as_json
-  end
-
-  def test_index_with_offset_limit_as_api
-    with_settings :rest_api_enabled => '1' do
-      get :index, params(
-        :format => 'json',
-        :offset => 3,
-        :limit => 1,
-        :including_myself => true,
-        :key => User.find(3).api_key,
-      )
-    end
-    assert_response :success
-    assert_equal "application/json", @response.content_type
-
-    response_as_json = JSON.parse(@response.body)
-    expected = {"heartables" => [
-      {"object_type" => "wikipage",
-       "object_id" => 1,
-       "title" => "CookBook_documentation",
-       "project" => {"id" => 1, "name" => "eCookbook"},
-       "hearted_users_count" => 1,
-       "hearts" => [{"user" => {"id" => 3, "name" => "Dave Lopper"},
-                     "created_at" => "2010-05-03T10:34:06Z"}]},
-    ],
-                "total_count" => 7,
-                "offset" => 3,
-                "limit" => 1,
-                "including_myself" => true}
-    assert_equal expected, response_as_json
-  end
-
   def test_index_with_project
     @request.session[:user_id] = 3
     Issue.find(5).set_heart(User.find(1), true)
@@ -237,6 +156,7 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul > li:nth-child(1) a[href="/news/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
   end
+=end
 
   def test_hearted_by
     get :hearted_by, params(:user_id => 1)

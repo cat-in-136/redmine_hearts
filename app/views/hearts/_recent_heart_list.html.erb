@@ -1,4 +1,37 @@
 <%# frozen_string_literal: true %>
+
+<% if @heartables_with_hearts.empty? %>
+  <p class="nodata"><%=l :label_no_data %></p>
+<% else %>
+  <ul class="recent-heart-list">
+  <% heart_links = multiple_heart_links_with_counters(@heartables_with_hearts.keys, User.current) %>
+  <% @heartables_with_hearts.each do |heartable,hearts| %>
+    <li>
+      <div>
+        <span class="heartable-link">
+          <%= link_to_project(heartable.project) + ": " %>
+          <%= link_to_heartable heartable %>
+        </span>
+        <%= heart_links.shift %>
+      </div>
+      <ul>
+        <% hearts.each do |heart| %>
+          <li class="author">
+            <%= avatar(heart.user, :size => "24") %>
+            <%= authoring heart.created_at, heart.user, :label => :label_hearted_time_by %>
+          </li>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+  </ul>
+<% end %>
+
+<%
+if false
+%>
+
+
 <% if @heartables.empty? %>
   <p class="nodata"><%=l :label_no_data %></p>
 <% else %>
@@ -33,3 +66,7 @@
   </ul>
   <span class="pagination"><%= pagination_links_full @hearts_pages %></span>
 <% end %>
+
+<%
+end
+%>
