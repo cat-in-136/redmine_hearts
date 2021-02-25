@@ -50,17 +50,7 @@ class Heart < ActiveRecord::Base
       end
       Heart.where(:heartable => heartables)
     }.reduce { |scope1, scope2|
-      if ActiveRecord::VERSION::MAJOR >= 5 # Rails.version >= "5"
-        scope1.or(scope2)
-      else
-        Heart.where(
-          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-          )
-        ).tap { |scope12|
-          scope12.bind_values = scope1.bind_values + scope2.bind_values
-        }
-      end
+      scope1.or(scope2)
     }
   end
 
@@ -80,17 +70,7 @@ class Heart < ActiveRecord::Base
         Heart.none
       end
     }.reduce { |scope1, scope2|
-      if Rails.version >= "5"
-        scope1.or(scope2)
-      else
-        Heart.where(
-          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-          )
-        ).tap { |scope12|
-          scope12.bind_values = scope1.bind_values + scope2.bind_values
-        }
-      end
+      scope1.or(scope2)
     }
   end
 

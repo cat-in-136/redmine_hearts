@@ -309,7 +309,7 @@ class HeartsControllerTest < ActionController::TestCase
         "name" => "Help",
         "project" => {"id" => 1, "name" => "eCookbook"},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-10-01T10:34:04Z"},
+                    "created_at" => hearts(:hearts_004).updated_at.iso8601},
       },
       {
         "object_type" => "journal",
@@ -317,7 +317,7 @@ class HeartsControllerTest < ActionController::TestCase
         "project" => {"id" => 1, "name" => "eCookbook"},
         "journalized" => {"type" => "Issue", "id" => 1, "note_index" => 1},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-05-05T10:34:08Z"},
+                    "created_at" => hearts(:hearts_008).updated_at.iso8601},
       },
       {
         "object_type" => "news",
@@ -325,7 +325,7 @@ class HeartsControllerTest < ActionController::TestCase
         "title" => "eCookbook first release !",
         "project" => {"id" => 1, "name" => "eCookbook"},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-05-04T10:34:07Z"},
+                    "created_at" => hearts(:hearts_007).updated_at.iso8601},
       },
       {
         "object_type" => "wikipage",
@@ -333,14 +333,14 @@ class HeartsControllerTest < ActionController::TestCase
         "title" => "CookBook_documentation",
         "project" => {"id" => 1, "name" => "eCookbook"},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-05-03T10:34:06Z"},
+                    "created_at" => hearts(:hearts_006).updated_at.iso8601},
       },
       {
         "object_type" => "wiki",
         "object_id" => 1,
         "project" => {"id" => 1, "name" => "eCookbook"},
         "heart" => {"user" => {"id" => 3, "name" => "Dave Lopper"},
-                    "created_at" => "2010-01-02T10:34:05Z"},
+                    "created_at" => hearts(:hearts_005).updated_at.iso8601},
       },
       {
         "object_type" => "issue",
