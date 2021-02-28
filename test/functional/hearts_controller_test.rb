@@ -50,6 +50,8 @@ class HeartsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
     assert_select '#content > .nodata', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/, :count => 0
   end
 
   def test_index_including_myself
@@ -67,6 +69,23 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/, :count => 0
+  end
+
+  def test_previous_index
+    @request.session[:user_id] = 1
+    get :index, params(:from => 2.days.ago.to_date)
+    assert_response :success
+    assert_select '#content > ul.recent-heart-list > li', {:count => 3}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/projects/ecookbook/wiki"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
   end
 
   def test_project_index
@@ -75,6 +94,8 @@ class HeartsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
     assert_select '#content > .nodata', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/, :count => 0
   end
 
   def test_project_index_including_myself
@@ -92,6 +113,23 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/, :count => 0
+  end
+
+  def test_previous_project_index
+    @request.session[:user_id] = 1
+    get :index, params(:project_id => 1, :from => 2.days.ago.to_date)
+    assert_response :success
+    assert_select '#content > ul.recent-heart-list > li', {:count => 3}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/projects/ecookbook/wiki"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
   end
 
   def test_project_index_with_invalid_project_id_should_respond_404
@@ -100,63 +138,36 @@ class HeartsControllerTest < ActionController::TestCase
     assert_response 404
   end
 
-=begin
-
-    assert_select '#content > ul.recent-heart-list > li', {:count => 2}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/1"]', {:count => 1}
-  end
-
-  def test_index_including_myself
-    @request.session[:user_id] = 3
-    get :index, params(:including_myself => true)
+  def test_index_up_to_yesterday_should_show_next_page_link
+    @request.session[:user_id] = 2
+    get :index, params(:from => (User.find(2).today - 1))
     assert_response :success
-    assert_select '#content > ul.recent-heart-list > li', {:count => 7}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/news/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/projects/ecookbook/wiki"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(5) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(6) a[href="/boards/1/topics/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(6) a[href="/users/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/issues/2"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(7) a[href="/users/1"]', {:count => 1}
-  end
-
-  def test_index_with_project
-    @request.session[:user_id] = 3
-    Issue.find(5).set_heart(User.find(1), true)
-
-    get :index, params(:project_id => 1)
-    assert_response :success
-    assert_select '#content > ul > li', {:count => 2}
-    assert_select '#content > ul > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
-
-    get :index, params(:project_id => 3)
-    assert_response :success
-    assert_select '#content > ul > li', {:count => 1}
-    assert_select '#content > ul > li:nth-child(1) a[href="/issues/5"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
   end
 
   def test_notifications
     @request.session[:user_id] = 2
-
     get :notifications
     assert_response :success
-    assert_select '#content > ul > li', {:count => 2}
-    assert_select '#content > ul > li:nth-child(1) a[href="/news/1"]', {:count => 1}
-    assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
+    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
+    assert_select '#content > ul.recent-heart-list > li', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/, :count => 0
   end
-=end
+
+  def test_notifications_previous
+    @request.session[:user_id] = 2
+    get :notifications, params(:from => 2.days.ago.to_date)
+    assert_response :success
+    assert_select '#content > ul.recent-heart-list > li', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
+  end
 
   def test_hearted_by
     get :hearted_by, params(:user_id => 1)
