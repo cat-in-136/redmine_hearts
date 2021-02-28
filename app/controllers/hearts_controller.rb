@@ -41,6 +41,7 @@ class HeartsController < ApplicationController
     scope = scope.where(:created_at => @date_from...@date_to)
 
     @heartables_with_hearts = scope.
+      order(:created_at => :desc).
       includes(:heartable, :user => :email_address).
       group_by(&:heartable)
 
@@ -64,6 +65,7 @@ class HeartsController < ApplicationController
     scope = scope.where(:created_at => @date_from...@date_to)
 
     @heartables_with_hearts = scope.
+      order(:created_at => :desc).
       includes(:heartable, :user => :email_address).
       group_by(&:heartable)
 
