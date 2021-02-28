@@ -54,25 +54,6 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '.pagination a', :text => /Next/, :count => 0
   end
 
-  def test_index_including_myself
-    @request.session[:user_id] = 3
-    get :index, params(:including_myself => true)
-    assert_response :success
-    assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
-    assert_select '[name="including_myself"][checked]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li', {:count => 4}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/issues/1#note-1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/news/1"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/projects/ecookbook/wiki/CookBook_documentation"]', {:count => 1}
-    assert_select '#content > ul.recent-heart-list > li:nth-child(4) a[href="/users/3"]', {:count => 1}
-    assert_select '.pagination a', :text => /Previous/
-    assert_select '.pagination a', :text => /Next/, :count => 0
-  end
-
   def test_previous_index
     @request.session[:user_id] = 1
     get :index, params(:from => 2.days.ago.to_date)
@@ -84,6 +65,32 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '#content > ul.recent-heart-list > li:nth-child(2) a[href="/users/3"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/projects/ecookbook/wiki"]', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(3) a[href="/users/3"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
+  end
+
+  def test_index_including_myself
+    @request.session[:user_id] = 3
+    get :index, params(:including_myself => true, :from => '2006-08-01')
+    assert_response :success
+    assert_select '.subtitle', :text => /08\/01\/2006/
+    assert_select '[name="including_myself"][checked]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/issues/2"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/1"]', {:count => 1}
+    assert_select '.pagination a', :text => /Previous/
+    assert_select '.pagination a', :text => /Next/
+
+    @request.session[:user_id] = 3
+    get :index, params(:from => '2006-08-01')
+    assert_response :success
+    assert_select '.subtitle', :text => /08\/01\/2006/
+    assert_select '[name="including_myself"][checked]', {:count => 0}
+    assert_select '#content > ul.recent-heart-list > li', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/issues/2"]', {:count => 1}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/3"]', {:count => 0}
+    assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/users/1"]', {:count => 1}
     assert_select '.pagination a', :text => /Previous/
     assert_select '.pagination a', :text => /Next/
   end
