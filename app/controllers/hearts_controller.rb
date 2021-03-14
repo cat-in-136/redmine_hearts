@@ -47,6 +47,7 @@ class HeartsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 
@@ -71,6 +72,7 @@ class HeartsController < ApplicationController
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 

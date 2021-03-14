@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+api.array :heartables, api_meta(:range_from => @date_from, :range_to => @date_to, :days => @days, :from => params[:from], :including_myself => !!params["including_myself"]) do
+  @heartables_with_hearts.each do |heartable,hearts|
+    api.heartable do
+      render_api_heartable_include(heartable, api)
+
+      api.array :hearts do
+        hearts.each do |heart|
+          api.heart do
+            api.user(:id => heart.user_id, :name => heart.user.name) unless heart.user.nil?
+            api.created_at heart.created_at
+          end
+        end
+      end
+    end
+  end
+end
