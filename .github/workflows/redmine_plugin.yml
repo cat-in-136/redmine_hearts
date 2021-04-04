@@ -11,13 +11,14 @@ jobs:
       fail-fast: false
       matrix:
         mat_env:
-        - '2.7 redmica/redmica@v1.0.1'
-        #- '2.7 redmine/redmine@4.1.1' # ruby 2.7 is not supported in redmine4.1
-        - '2.6 redmine/redmine@4.1.1'
-        - '2.6 redmine/redmine@4.0.7'
-        - '2.5 redmine/redmine@4.0.7'
-        #- '2.5 redmine/redmine@3.4.12' # skip due to bundler error
-        #- '2.4 redmine/redmine@3.4.12' # skip due to bundler error
+        - '2.7 redmica/redmica@v1.2.1'
+        - '2.7 redmine/redmine@4.2.0'
+        - '2.6 redmine/redmine@4.2.0'
+        - '2.6 redmine/redmine@4.1.2'
+        - '2.6 redmine/redmine@4.0.8'
+        - '2.5 redmine/redmine@4.0.8'
+        - '2.5 redmine/redmine@3.4.12'
+        - '2.4 redmine/redmine@3.4.12'
         - '2.3 redmine/redmine@3.4.12'
         experimental: [false]
         include:
@@ -66,6 +67,11 @@ jobs:
         key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-gems-
+
+    - name: Use legacy bundler if ruby < 2.5 || redmine 3
+      if: ${{ env.RUBY_VERSION < 2.5 || startsWith(env.REDMINE_REF, '3.') }}
+      run: gem uninstall bundler && gem install bundler -v 1.17.3
+
     - name: Before script
       run: |
         cd ./redmine
