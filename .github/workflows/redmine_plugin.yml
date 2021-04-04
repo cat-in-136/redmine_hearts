@@ -16,6 +16,9 @@ jobs:
         - '2.6 redmine/redmine@4.1.2'
         - '2.6 redmine/redmine@4.0.8'
         - '2.5 redmine/redmine@4.0.8'
+        - '2.5 redmine/redmine@3.4.12'
+        - '2.4 redmine/redmine@3.4.12'
+        - '2.3 redmine/redmine@3.4.12'
         experimental: [false]
         include:
           - mat_env: '2.7 redmica/redmica@master'
@@ -63,6 +66,11 @@ jobs:
         key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-gems-
+
+    - name: Use legacy bundler if ruby < 2.5
+      if: ${{ env.RUBY_VERSION < 2.5 }}
+      run: gem uninstall bundler && gem install bundler -v 1.17.3
+
     - name: Before script
       run: |
         cd ./redmine
