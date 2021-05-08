@@ -33,6 +33,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def setup
     User.current = nil
+    Setting.activity_days_default = 30 # to align earlier version behaviour than 4.2. (ref. https://redmine.org/issues/32248 )
   end
 
   def params(params={})
