@@ -23,6 +23,14 @@
 </span>
 
 <%= content_for :sidebar do %>
+  <%= form_tag({}, :method => :get, :id => 'hearts_index_scope_form') do %>
+    <h3><%= l(:hearts_notification_label) %></h3>
+    <p>
+      <%= t(:label_hearted_days_to_html, :days => @days, :date => date_field_tag('from', '', :value => (@date_to - 1), :size => 10)) %>
+      <%= calendar_for('from') %>
+    </p>
+    <p><%= submit_tag l(:button_apply), :class => 'button-small', :name => 'submit' %></p>
+  <% end %>
   <%= render :partial => "hearts/sidebar" %>
 <% end %>
 
