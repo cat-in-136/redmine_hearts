@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         mat_env:
-        - '2.7 redmica/redmica@v1.2.1'
+        - '2.7 redmica/redmica@v1.3.0'
         - '2.7 redmine/redmine@4.2.1'
         - '2.6 redmine/redmine@4.2.1'
         - '2.6 redmine/redmine@4.1.3'
