@@ -204,7 +204,7 @@ class HeartsControllerTest < ActionController::TestCase
       )
     end
     assert_response :success
-    assert_equal 'application/json', @response.content_type
+    assert_equal 'application/json', @response.media_type
 
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables" => [
@@ -238,7 +238,7 @@ class HeartsControllerTest < ActionController::TestCase
       )
     end
     assert_response :success
-    assert_equal 'application/json', @response.content_type
+    assert_equal 'application/json', @response.media_type
 
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables" => [
@@ -405,7 +405,7 @@ class HeartsControllerTest < ActionController::TestCase
       )
     end
     assert_response :success
-    assert_equal 'application/json', @response.content_type
+    assert_equal 'application/json', @response.media_type
 
     response_as_json = JSON.parse(@response.body)
     expected = {"heartables" => [
