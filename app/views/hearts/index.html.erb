@@ -1,19 +1,42 @@
 <%# frozen_string_literal: true %>
 
-<div class="contextual">
-  <%= form_tag({}, :method => :get) do %>
-    <label for="including_myself">
-      <%= check_box_tag 'including_myself', 1, params[:including_myself], :onchange => "this.form.submit();" %>
-      <%=l :including_hearted_myself %>
-    </label>
-  <% end %>
-</div>
-
 <h2><%= l(:recently_hearted_objects) %></h2>
+
+<p class="subtitle"><%= l(:label_date_from_to, :start => format_date(@date_to - @days), :end => format_date(@date_to-1)) %></p>
 
 <%= render :partial => "hearts/recent_heart_list" %>
 
+<span class="pagination">
+  <ul class="pages">
+    <li class="previous page">
+<%= link_to("\xc2\xab " + l(:label_previous),
+                   {:params => request.query_parameters.merge(:from => @date_to - @days - 1)},
+                   :title => l(:label_date_from_to, :start => format_date(@date_to - 2*@days), :end => format_date(@date_to - @days - 1)),
+                   :accesskey => accesskey(:previous)) %>
+    </li><% unless @date_to > User.current.today %><li class="next page">
+<%= link_to(l(:label_next) + " \xc2\xbb",
+                   {:params => request.query_parameters.merge(:from => @date_to + @days - 1)},
+                   :title => l(:label_date_from_to, :start => format_date(@date_to), :end => format_date(@date_to + @days - 1)),
+                   :accesskey => accesskey(:next)) %><% end %>
+    </li>
+  </ul>
+</span>
+
 <%= content_for :sidebar do %>
+  <%= form_tag({}, :method => :get, :id => 'hearts_index_scope_form') do %>
+    <h3><%= l(:recently_hearted_objects) %></h3>
+    <p>
+      <%= t(:label_hearted_days_to_html, :days => @days, :date => date_field_tag('from', '', :value => (@date_to - 1), :size => 10)) %>
+      <%= calendar_for('from') %>
+    </p>
+    <p>
+      <label for="including_myself">
+        <%= check_box_tag 'including_myself', 1, params[:including_myself] %>
+        <%=l :including_hearted_myself %>
+      </label>
+    </p>
+    <p><%= submit_tag l(:button_apply), :class => 'button-small', :name => 'submit' %></p>
+  <% end %>
   <%= render :partial => "hearts/sidebar" %>
 <% end %>
 

@@ -28,21 +28,22 @@ class HeartsController < ApplicationController
   before_action :find_heartables, :only => [:heart, :unheart, :hearted_users]
 
   def index
-    @offset, @limit = api_offset_and_limit
-
     scope = Heart.of_projects(@project ? [@project] : Project.visible, User.current)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
-    scope = scope.select(:heartable_type, :heartable_id).group(:heartable_type, :heartable_id)
-    scope = scope.order(Arel.sql("MAX(created_at) DESC"))
-    @scope_count = Heart.from(scope, :hearts).count
-    @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
-    @offset ||= @hearts_pages.offset
 
-    @heartables = scope.
-      limit(@limit).
-      offset(@offset).
-      includes(:heartable).
-      map(&:heartable)
+    @days = Setting.activity_days_default.to_i
+    if params[:from]
+      begin; @date_to = params[:from].to_date + 1; rescue; end
+    end
+    @date_to ||= User.current.today + 1
+    @date_from = @date_to - @days
+
+    scope = scope.where(:created_at => @date_from...@date_to)
+
+    @heartables_with_hearts = scope.
+      order(:created_at => :desc).
+      includes(:heartable, :user => :email_address).
+      group_by(&:heartable)
 
     respond_to do |format|
       format.html
@@ -51,25 +52,27 @@ class HeartsController < ApplicationController
   end
 
   def notifications
-    @offset, @limit = api_offset_and_limit
     @user = User.current
-
     scope = Heart.notifications_to(@user)
     scope = scope.where.not(:user => User.current) unless params["including_myself"]
-    scope = scope.select(:heartable_type, :heartable_id).group(:heartable_type, :heartable_id)
-    scope = scope.order(Arel.sql("MAX(created_at) DESC"))
-    @scope_count = Heart.from(scope, :hearts).count
-    @hearts_pages = Paginator.new @scope_count, @limit, params["page"]
-    @offset ||= @hearts_pages.offset
 
-    @heartables = scope.
-      limit(@limit).
-      offset(@offset).
-      includes(:heartable).
-      map(&:heartable)
+    @days = Setting.activity_days_default.to_i
+    if params[:from]
+      begin; @date_to = params[:from].to_date + 1; rescue; end
+    end
+    @date_to ||= User.current.today + 1
+    @date_from = @date_to - @days
+
+    scope = scope.where(:created_at => @date_from...@date_to)
+
+    @heartables_with_hearts = scope.
+      order(:created_at => :desc).
+      includes(:heartable, :user => :email_address).
+      group_by(&:heartable)
 
     respond_to do |format|
       format.html
+      format.api
     end
   end
 

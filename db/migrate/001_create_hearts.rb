@@ -1,4 +1,4 @@
-class CreateHearts < ((Rails.version > "5")? ActiveRecord::Migration[4.2] : ActiveRecord::Migration)
+class CreateHearts < ActiveRecord::Migration[4.2]
   def change
     create_table :hearts do |t|
       t.references :heartable, :polymorphic => true, :index => true

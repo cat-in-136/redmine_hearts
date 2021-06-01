@@ -28,7 +28,7 @@ class Heart < ActiveRecord::Base
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
   validate :validate_user
 
-  scope :of_projects, lambda { |*args|
+  def self.of_projects(*args)
     projects = args.size > 0 ? args.shift : Project.none
     user = args.size > 0 ? args.shift : nil
     raise ArgumentError if args.size > 0
@@ -50,21 +50,11 @@ class Heart < ActiveRecord::Base
       end
       Heart.where(:heartable => heartables)
     }.reduce { |scope1, scope2|
-      if ActiveRecord::VERSION::MAJOR >= 5 # Rails.version >= "5"
-        scope1.or(scope2)
-      else
-        Heart.where(
-          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-          )
-        ).tap { |scope12|
-          scope12.bind_values = scope1.bind_values + scope2.bind_values
-        }
-      end
+      scope1.or(scope2)
     }
-  }
+  end
 
-  scope :notifications_to, lambda { |user|
+  def self.notifications_to(user)
     raise ArgumentError unless user
 
     ActiveRecord::Base.subclasses.select { |klass|
@@ -80,19 +70,9 @@ class Heart < ActiveRecord::Base
         Heart.none
       end
     }.reduce { |scope1, scope2|
-      if Rails.version >= "5"
-        scope1.or(scope2)
-      else
-        Heart.where(
-          Heart.arel_table.grouping(scope1.where_values.reduce(:and)).or(
-            Heart.arel_table.grouping(scope2.where_values.reduce(:and))
-          )
-        ).tap { |scope12|
-          scope12.bind_values = scope1.bind_values + scope2.bind_values
-        }
-      end
+      scope1.or(scope2)
     }
-  }
+  end
 
   def self.any_hearted?(objects, user)
     objects = objects.reject(&:new_record?)

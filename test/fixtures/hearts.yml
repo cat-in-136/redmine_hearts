@@ -1,49 +1,49 @@
---- 
-hearts_001: 
+---
+hearts_001:
   heartable_type: Issue
   heartable_id: 2
   user_id: 3
   created_at: 2006-07-21 22:10:51 +02:00
   updated_at: 2006-07-21 22:10:51 +02:00
-hearts_002: 
+hearts_002:
   heartable_type: Message
   heartable_id: 1
   user_id: 1
   created_at: 2007-05-13 18:16:33 +02:00
   updated_at: 2007-05-13 18:16:33 +02:00
-hearts_003: 
+hearts_003:
   heartable_type: Issue
   heartable_id: 2
   user_id: 1
   created_at: 2006-07-20 22:10:51 +02:00
   updated_at: 2006-07-20 22:10:51 +02:00
-hearts_004: 
-  heartable_type: Board
-  heartable_id: 1
-  user_id: 3
-  created_at: 2010-10-01 12:34:04 +02:00
-  updated_at: 2010-10-01 12:34:04 +02:00
-hearts_005: 
+hearts_005:
   heartable_type: Wiki
   heartable_id: 1
   user_id: 3
-  created_at: 2010-01-02 12:34:05 +02:00
-  updated_at: 2010-01-02 12:34:05 +02:00
-hearts_006: 
+  created_at: <%= 30.days.ago.to_date.to_s(:db) %>
+  updated_at: <%= 30.days.ago.to_date.to_s(:db) %>
+hearts_006:
   heartable_type: WikiPage
   heartable_id: 1
   user_id: 3
-  created_at: 2010-05-03 12:34:06 +02:00
-  updated_at: 2010-05-03 12:34:06 +02:00
-hearts_007: 
+  created_at: <%= 29.days.ago.to_date.to_s(:db) %>
+  updated_at: <%= 29.days.ago.to_date.to_s(:db) %>
+hearts_007:
   heartable_type: News
   heartable_id: 1
   user_id: 3
-  created_at: 2010-05-04 12:34:07 +02:00
-  updated_at: 2010-05-04 12:34:07 +02:00
-hearts_008: 
+  created_at: <%= 2.days.ago.to_date.to_s(:db) %>
+  updated_at: <%= 2.days.ago.to_date.to_s(:db) %>
+hearts_008:
   heartable_type: Journal
   heartable_id: 1
   user_id: 3
-  created_at: 2010-05-05 12:34:08 +02:00
-  updated_at: 2010-05-05 12:34:08 +02:00
+  created_at: <%= 1.day.ago.to_date.to_s(:db) %>
+  updated_at: <%= 1.day.ago.to_date.to_s(:db) %>
+hearts_004:
+  heartable_type: Board
+  heartable_id: 1
+  user_id: 3
+  created_at: <%= 1.minute.ago.to_date.to_s(:db) %>
+  updated_at: <%= 1.minute.ago.to_date.to_s(:db) %>
