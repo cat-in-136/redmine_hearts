@@ -48,6 +48,9 @@ $(function() {
 
     // append to contextual within the corresponding items.
     if (num_insert === 0) {
+      num_insert += $(link).appendTo("#" + heartable_subject + " > .contextual").length;
+    }
+    if (num_insert === 0) {
       num_insert += $(link).appendTo("#" + heartable_subject + " .contextual").length;
     }
 
