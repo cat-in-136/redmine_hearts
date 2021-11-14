@@ -26,7 +26,7 @@ Redmine::Plugin.register :redmine_hearts do
   name 'Redmine Hearts plugin'
   author '@cat_in_136'
   description 'provide intra-Redmine Like/Fav reactions'
-  version '2.0.0'
+  version '2.0.1'
   url 'https://github.com/cat-in-136/redmine_hearts'
   author_url 'https://github.com/cat-in-136/'
 
