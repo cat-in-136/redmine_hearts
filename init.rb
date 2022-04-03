@@ -17,10 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-require_dependency 'redmine_hearts/acts_as_heartable.rb'
-require_dependency 'redmine_hearts/issue_query.rb'
-require_dependency 'redmine_hearts/redmine_heartable_patch.rb'
-require_dependency 'redmine_hearts/view_hook.rb'
+require File.expand_path('../lib/redmine_hearts/acts_as_heartable.rb', __FILE__)
+require File.expand_path('../lib/redmine_hearts/issue_query.rb', __FILE__)
+require File.expand_path('../lib/redmine_hearts/redmine_heartable_patch.rb', __FILE__)
+require File.expand_path('../lib/redmine_hearts/view_hook.rb', __FILE__)
 
 Redmine::Plugin.register :redmine_hearts do
   name 'Redmine Hearts plugin'
