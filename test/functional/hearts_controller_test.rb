@@ -36,15 +36,6 @@ class HeartsControllerTest < ActionController::TestCase
     Setting.activity_days_default = 30 # to align earlier version behaviour than 4.2. (ref. https://redmine.org/issues/32248 )
   end
 
-  def params(params={})
-    if Rails.version >= "5"
-      {:params => params}
-    else
-      params
-    end
-  end
-  private :params
-
   def test_index
     @request.session[:user_id] = 3
     get :index
@@ -57,7 +48,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_previous_index
     @request.session[:user_id] = 1
-    get :index, params(:from => 2.days.ago.to_date)
+    get :index, :params => { :from => 2.days.ago.to_date }
     assert_response :success
     assert_select '#content > ul.recent-heart-list > li', {:count => 3}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
@@ -72,7 +63,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_index_including_myself
     @request.session[:user_id] = 3
-    get :index, params(:including_myself => true, :from => '2006-08-01')
+    get :index, :params => { :including_myself => true, :from => '2006-08-01' }
     assert_response :success
     assert_select '.subtitle', :text => /08\/01\/2006/
     assert_select '[name="including_myself"][checked]', {:count => 1}
@@ -84,7 +75,7 @@ class HeartsControllerTest < ActionController::TestCase
     assert_select '.pagination a', :text => /Next/
 
     @request.session[:user_id] = 3
-    get :index, params(:from => '2006-08-01')
+    get :index, :params => { :from => '2006-08-01' }
     assert_response :success
     assert_select '.subtitle', :text => /08\/01\/2006/
     assert_select '[name="including_myself"][checked]', {:count => 0}
@@ -98,7 +89,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_project_index
     @request.session[:user_id] = 3
-    get :index, params(:project_id => 1)
+    get :index, :params => { :project_id => 1 }
     assert_response :success
     assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
     assert_select '#content > .nodata', {:count => 1}
@@ -108,7 +99,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_project_index_including_myself
     @request.session[:user_id] = 3
-    get :index, params(:project_id => 1, :including_myself => true)
+    get :index, :params => { :project_id => 1, :including_myself => true }
     assert_response :success
     assert_select '.subtitle', :text => /#{ApplicationController.helpers.format_date User.find(3).today}/
     assert_select '[name="including_myself"][checked]', {:count => 1}
@@ -127,7 +118,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_previous_project_index
     @request.session[:user_id] = 1
-    get :index, params(:project_id => 1, :from => 2.days.ago.to_date)
+    get :index, :params => { :project_id => 1, :from => 2.days.ago.to_date }
     assert_response :success
     assert_select '#content > ul.recent-heart-list > li', {:count => 3}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
@@ -142,13 +133,13 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_project_index_with_invalid_project_id_should_respond_404
     @request.session[:user_id] = 3
-    get :index, params(:project_id => 299)
+    get :index, :params => { :project_id => 299 }
     assert_response 404
   end
 
   def test_index_up_to_yesterday_should_show_next_page_link
     @request.session[:user_id] = 2
-    get :index, params(:from => (User.find(2).today - 1))
+    get :index, :params => { :from => (User.find(2).today - 1) }
     assert_response :success
     assert_select '.pagination a', :text => /Previous/
     assert_select '.pagination a', :text => /Next/
@@ -168,7 +159,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_notifications_previous
     @request.session[:user_id] = 2
-    get :notifications, params(:from => 2.days.ago.to_date)
+    get :notifications, :params => { :from => 2.days.ago.to_date }
     assert_response :success
     assert_select '#content > ul.recent-heart-list > li', {:count => 1}
     assert_select '#content > ul.recent-heart-list > li:nth-child(1) a[href="/news/1"]', {:count => 1}
@@ -178,13 +169,13 @@ class HeartsControllerTest < ActionController::TestCase
   end
 
   def test_hearted_by
-    get :hearted_by, params(:user_id => 1)
+    get :hearted_by, :params => { :user_id => 1 }
     assert_response :success
     assert_select '#content > ul > li', {:count => 2}
     assert_select '#content > ul > li:nth-child(1) a[href="/boards/1/topics/1"]', {:count => 1}
     assert_select '#content > ul > li:nth-child(2) a[href="/issues/2"]', {:count => 1}
 
-    get :hearted_by, params(:user_id => 3)
+    get :hearted_by, :params => { :user_id => 3 }
     assert_response :success
     assert_select '#content > ul > li', {:count => 6}
     assert_select '#content > ul > li:nth-child(1) a[href="/projects/ecookbook/boards/1"]', {:count => 1}
@@ -197,11 +188,11 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_hearted_by_as_api
     with_settings :rest_api_enabled => '1' do
-      get :hearted_by, params(
+      get :hearted_by, :params => {
         :user_id => '1',
         :format => 'json',
         :key => User.find(3).api_key,
-      )
+      }
     end
     assert_response :success
     assert_equal 'application/json', @response.media_type
@@ -231,11 +222,11 @@ class HeartsControllerTest < ActionController::TestCase
     assert_equal expected, response_as_json
 
     with_settings :rest_api_enabled => '1' do
-      get :hearted_by, params(
+      get :hearted_by, :params => {
         :user_id => '3',
         :format => 'json',
         :key => User.find(3).api_key,
-      )
+      }
     end
     assert_response :success
     assert_equal 'application/json', @response.media_type
@@ -299,7 +290,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_heart_a_single_object_as_html
     @request.session[:user_id] = 3
     assert_difference('Heart.count') do
-      post :heart, params(:object_type => 'issue', :object_id => '1')
+      post :heart, :params => { :object_type => 'issue', :object_id => '1' }
       assert_response :success
       assert_include 'Heart added', response.body
     end
@@ -309,7 +300,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_heart_a_single_object
     @request.session[:user_id] = 3
     assert_difference('Heart.count') do
-      post :heart, params(:object_type => 'issue', :object_id => '1', :format => :js)
+      post :heart, :params => { :object_type => 'issue', :object_id => '1', :format => :js }
       assert_response :success
       assert_include '$(".issue-1-heart")', response.body
     end
@@ -319,12 +310,12 @@ class HeartsControllerTest < ActionController::TestCase
   def test_heart_a_single_object_as_api
     assert_difference('Heart.count') do
       with_settings :rest_api_enabled => '1' do
-        post :heart, params(
+        post :heart, :params => {
           :object_type => 'issue',
           :object_id => '1',
           :format => 'json',
           :key => User.find(3).api_key,
-        )
+        }
       end
       assert_response :no_content
     end
@@ -334,7 +325,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_heart_a_collection_with_a_single_object
     @request.session[:user_id] = 3
     assert_difference("Heart.count") do
-      post :heart, params(:object_type => "issue", :object_id => ["1"], :format => :js)
+      post :heart, :params => { :object_type => "issue", :object_id => ["1"], :format => :js }
       assert_response :success
       assert_include '$(".issue-1-heart")', response.body
     end
@@ -344,7 +335,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_heart_a_collection_with_multipe_objects
     @request.session[:user_id] = 3
     assert_difference('Heart.count', 2) do
-      post :heart, params(:object_type => 'issue', :object_id => ['1', '3'], :format => :js)
+      post :heart, :params => { :object_type => 'issue', :object_id => ['1', '3'], :format => :js }
       assert_response :success
       assert_include '$(".issue-bulk-heart")', response.body
     end
@@ -355,7 +346,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_unheart_a_single_object_as_html
     @request.session[:user_id] = 3
     assert_difference('Heart.count', -1) do
-      delete :unheart, params(:object_type => 'issue', :object_id => '2')
+      delete :unheart, :params => { :object_type => 'issue', :object_id => '2' }
       assert_response :success
       assert_include 'Heart removed', response.body
     end
@@ -365,7 +356,7 @@ class HeartsControllerTest < ActionController::TestCase
   def test_unheart_a_single_object
     @request.session[:user_id] = 3
     assert_difference('Heart.count', -1) do
-      delete :unheart, params(:object_type => 'issue', :object_id => '2', :format => :js)
+      delete :unheart, :params => { :object_type => 'issue', :object_id => '2', :format => :js }
       assert_response :success
       assert_include '$(".issue-2-heart")', response.body
     end
@@ -375,12 +366,12 @@ class HeartsControllerTest < ActionController::TestCase
   def test_unheart_a_single_object_as_api
     assert_difference('Heart.count', -1) do
       with_settings :rest_api_enabled => '1' do
-        post :unheart, params(
+        post :unheart, :params => {
           :object_type => 'issue',
           :object_id => '2',
           :format => 'json',
           :key => User.find(3).api_key,
-        )
+        }
       end
       assert_response :no_content
     end
@@ -389,7 +380,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_hearted_users_non_liked_object
     @request.session[:user_id] = 3
-    get :hearted_users, params(:object_type => 'issue', :object_id => '1')
+    get :hearted_users, :params => { :object_type => 'issue', :object_id => '1' }
     assert_response :success
     assert_select '#content h3', {:text => "Not liked yet"}
     assert_select '#content ul', {:count => 0}
@@ -397,12 +388,12 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_hearted_users_non_liked_object_as_api
     with_settings :rest_api_enabled => '1' do
-      get :hearted_users, params(
+      get :hearted_users, :params => {
         :object_type => 'issue',
         :object_id => '2',
         :format => 'json',
         :key => User.find(3).api_key,
-      )
+      }
     end
     assert_response :success
     assert_equal 'application/json', @response.media_type
@@ -426,7 +417,7 @@ class HeartsControllerTest < ActionController::TestCase
 
   def test_hearted_users_liked_object
     @request.session[:user_id] = 3
-    get :hearted_users, params(:object_type => 'issue', :object_id => '2')
+    get :hearted_users, :params => { :object_type => 'issue', :object_id => '2' }
     assert_response :success
     assert_select '#content h3', {:text => "2 Likes"}
     assert_select '#content ul li', {:count => 2}
