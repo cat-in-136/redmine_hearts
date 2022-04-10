@@ -86,17 +86,6 @@ jobs:
         REDMINE_LANG: en
         RAILS_ENV: test
 
-    - name: Zeitwerk check
-      run: |
-        if system("grep zeitwerk config/application.rb > /dev/null")
-          exec("bundle exec rake zeitwerk:check")
-        end
-      shell: ruby {0}
-      working-directory: ./redmine
-      env:
-        REDMINE_LANG: en
-        RAILS_ENV: test
-
     # HACK sometimes fails login error, so retry 10 times
     # HACK use shell script file to avoid interruption by error
     - name: Prepare test script
