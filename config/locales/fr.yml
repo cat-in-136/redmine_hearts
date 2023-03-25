@@ -1,0 +1,15 @@
+# French strings go here for Rails i18n
+fr:
+  recently_hearted_objects: "Aimé récemment"
+  recently_hearted_by: "Aimé récemment par %{author}"
+  recently_hearted_by_me: "Aimé récemment par moi"
+  including_hearted_myself: "Inclure ce que j'aime moi-même"
+  label_hearted_days_to_html: "%{days} jours jusqu'au %{date}"
+  label_hearted_time: "Aimé il y a %{age}"
+  label_hearted_time_by: "Aimé par %{author} il y a %{age}"
+  hearts_link_label: "J'aime"
+  hearts_count_label:
+    zero: "Jamais aimé"
+    one: "Aimé %{count} fois"
+    other: "Aimé %{count} fois"
+  hearts_notification_label: "Mes activités aimées récemment"
