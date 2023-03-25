@@ -54,13 +54,12 @@ module HeartsHelper
 
     css = heart_bool ? 'icon icon-heart' : 'icon icon-heart-off'
     text = content_tag :span, l(:hearts_link_label), :class => 'heart-link-label'
-    object_type_and_id = {
-      :object_type => objects.first.class.to_s.underscore,
-      :object_id => (objects.size == 1 ? objects.first.id : objects.map(&:id).sort)
-    }
-    url = heart_url(object_type_and_id)
+    object_type = objects.first.class.to_s.underscore
+    object_id = (objects.size == 1) ? objects.first.id : objects.map(&:id).sort
+
+    url = heart_url(:object_type => object_type, :object_id => object_id, :only_path => true)
     method = heart_bool ? 'delete' : 'post'
-    hearted_users_url = hearts_hearted_users_url(object_type_and_id)
+    hearted_users_url = hearts_hearted_users_url(:object_type => object_type, :object_id => object_id, :only_path => true)
 
     content_tag :span, :class => "#{heart_css(objects)} heart-link-with-count" do
       html = String.new

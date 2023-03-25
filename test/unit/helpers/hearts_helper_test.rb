@@ -35,12 +35,12 @@ class HeartsHelperTest < Redmine::HelperTest
         [
           link_to(
             content_tag(:span, "Like", :class => 'heart-link-label'),
-            heart_url(:object_id => 1, :object_type => 'issue'),
+            heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
           link_to(
             "0",
-            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue'),
+            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :class => "heart-count-number"
           ),
         ],
@@ -72,12 +72,12 @@ class HeartsHelperTest < Redmine::HelperTest
         [
           link_to(
             content_tag(:span, "Like", :class => 'heart-link-label'),
-            heart_url(:object_id => [1, 3], :object_type => 'issue'),
+            heart_url(:object_id => [1, 3], :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
           link_to(
             "0",
-            hearts_hearted_users_url(:object_id => [1, 3], :object_type => 'issue'),
+            hearts_hearted_users_url(:object_id => [1, 3], :object_type => 'issue', :only_path => true),
             :class => "heart-count-number"
           ),
         ],
@@ -99,12 +99,12 @@ class HeartsHelperTest < Redmine::HelperTest
         [
           link_to(
             content_tag(:span, "Like", :class => 'heart-link-label'),
-            heart_url(:object_id => 1, :object_type => 'issue'),
+            heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'delete', :class => "icon icon-heart"
           ),
           link_to(
             "1",
-            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue'),
+            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :class => "heart-count-number"
           ),
         ],
