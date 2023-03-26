@@ -4,7 +4,7 @@ api.array :heartables do
     api.heartable do
       render_api_heartable_include(heartable, api)
 
-      api.hearted_users_count heartable.hearts.count
+      api.hearted_users_count heartable.hearted_user_count
       api.array :hearts do
         heartable.hearts.each do |heart|
           api.heart do

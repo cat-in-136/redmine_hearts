@@ -84,6 +84,10 @@ module Redmine
           super user_ids
         end
 
+        def hearted_user_count
+          hearted_users.count
+        end
+
         def hearted_by?(user)
           !!(user && self.hearted_user_ids.detect {|uid| uid == user.id })
         end

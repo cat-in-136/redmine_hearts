@@ -48,11 +48,11 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
   end
 
   def test_index_with_heart_column
-    get '/issues?set_filter=1&sort=hearts.count:desc,id&c[]=subject&c[]=hearts.count'
+    get '/issues?set_filter=1&sort=hearts.count:desc,id&c[]=subject&c[]=hearted_user_count'
     assert_response :success
     assert_select 'thead > tr > th:nth-child(4)', :text => 'Like'
     assert_select 'td.id', :text => '5'
-    assert_select 'tbody > tr#issue-2:first-child td.hearts-count', :text => '2'
+    assert_select 'tbody > tr#issue-2 td.hearted_user_count', :text => '2'
   end
 
   def test_view

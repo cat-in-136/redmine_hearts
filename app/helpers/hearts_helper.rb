@@ -26,7 +26,7 @@ module HeartsHelper
     return '' unless objects.any?
 
     heart_bool = user && user.logged? && Heart.any_hearted?(objects, user)
-    hearted_users_count = objects.map { |v| v.hearted_users.count }.sum
+    hearted_users_count = objects.map { |v| v.hearted_user_count }.sum
 
     heart_link_with_counter_manual(objects, heart_bool, hearted_users_count, user)
   end
