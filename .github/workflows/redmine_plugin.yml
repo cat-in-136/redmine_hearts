@@ -40,7 +40,6 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ env.RUBY_VERSION }}
-        bundler-cache: true
 
     - name: Checkout
       uses: actions/checkout@v3
@@ -64,6 +63,13 @@ jobs:
             adapter: sqlite3
             database: db/redmine_test.db
 
+    - uses: actions/cache@v3
+      with:
+        path: ./redmine/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
     - name: Before script
       run: |
         cd ./redmine
@@ -85,7 +91,7 @@ jobs:
     # HACK sometimes fails login error, so retry 10 times
     # HACK use shell script file to avoid interruption by error
     - name: Prepare test script
-      uses: DamianReeves/write-file-action@v1.0
+      uses: DamianReeves/write-file-action@v1.2
       with:
         path: ./run_test.sh
         contents: |
