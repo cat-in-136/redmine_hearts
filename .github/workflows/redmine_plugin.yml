@@ -42,11 +42,11 @@ jobs:
         ruby-version: ${{ env.RUBY_VERSION }}
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: ./${{ env.PLUGIN_NAME }}
     - name: Set up Redmine
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: ${{ env.REDMINE_REPOSITORY }}
         ref: ${{ env.REDMINE_REF }}
@@ -55,7 +55,7 @@ jobs:
     - name: Copy the plugin files to plugin directory
       run: cp -pr ./${{ env.PLUGIN_NAME }} ./redmine/plugins/${{ env.PLUGIN_NAME }}
     - name: Create redmine/config/database.yml
-      uses: DamianReeves/write-file-action@v1.0
+      uses: DamianReeves/write-file-action@v1.2
       with:
         path: ./redmine/config/database.yml
         contents: |
@@ -63,7 +63,7 @@ jobs:
             adapter: sqlite3
             database: db/redmine_test.db
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ./redmine/vendor/bundle
         key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
@@ -73,7 +73,8 @@ jobs:
     - name: Before script
       run: |
         cd ./redmine
-        bundle install --path=${BUNDLE_PATH:-vendor/bundle}
+        bundle config --local path ${BUNDLE_PATH:-vendor/bundle}
+        bundle install
         
         mv plugins plugins_bak
         # Initialize redmine
@@ -91,7 +92,7 @@ jobs:
     # HACK sometimes fails login error, so retry 10 times
     # HACK use shell script file to avoid interruption by error
     - name: Prepare test script
-      uses: DamianReeves/write-file-action@v1.0
+      uses: DamianReeves/write-file-action@v1.2
       with:
         path: ./run_test.sh
         contents: |
