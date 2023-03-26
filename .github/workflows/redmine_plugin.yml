@@ -73,7 +73,8 @@ jobs:
     - name: Before script
       run: |
         cd ./redmine
-        bundle install --path=${BUNDLE_PATH:-vendor/bundle}
+        bundle config --local path ${BUNDLE_PATH:-vendor/bundle}
+        bundle install
         
         mv plugins plugins_bak
         # Initialize redmine
