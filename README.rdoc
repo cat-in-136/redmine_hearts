@@ -8,6 +8,7 @@ Redmine Hearts is a plugin which provides intra-Redmine Like/Fav reactions to is
 == How to install
 
 * Download the plugin to your 'plugins/' directory
+* Make sure the new folder's name is 'redmine_hearts'
 * Run <code>bundle exec rake redmine:plugins:migrate RAILS_ENV=production</code>
 * Restart your redmine
 
