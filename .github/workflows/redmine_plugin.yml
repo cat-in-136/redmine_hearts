@@ -71,6 +71,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gems-
 
+    - name: uninitialized constant Nokogiri::HTML4 Issue HACK ref. https://qiita.com/Mattani/items/c4bcc95a72b69d1c0489
+      uses: DamianReeves/write-file-action@v1.2
+      with:
+        path: ./redmine/Gemfile.local
+        contents: |
+          gem 'loofah', '~> 2.20.0'
+      if: contains(fromJSON('["2.6 redmine/redmine@4.1.7", "2.6 redmine/redmine@4.0.9", "2.5 redmine/redmine@4.0.9"]'), matrix.mat_env)
+
     - name: Before script
       run: |
         cd ./redmine
