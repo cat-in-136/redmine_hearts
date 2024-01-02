@@ -1,0 +1,6 @@
+<%# frozen_string_literal: true %>
+<% self.class.send :include, HeartsHelper %>
+(function() {
+  const link = "<%= escape_javascript(heart_link_with_counter(@journal, User.current)) %>";
+  $(link).prependTo($("#change-<%= @journal.id %> .journal-actions"));
+})();

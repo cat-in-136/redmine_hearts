@@ -52,6 +52,12 @@ module RedmineHearts
       end
     end
   
+    def view_journals_update_js_bottom(context={})
+      context[:controller].send(:render_to_string, {
+        :partial => "hooks/redmine_hearts/view_journals_update_js_bottom"
+      })
+    end
+
     private
     def heartable_subject(controller)
       subject = nil
