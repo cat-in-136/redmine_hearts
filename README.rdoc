@@ -2,8 +2,8 @@
 
 Redmine Hearts is a plugin which provides intra-Redmine Like/Fav reactions to issues and notes, news, wiki pages, and forum boards/messages.
 
-{<img src="https://github.com/cat-in-136/redmine_hearts/workflows/Redmine%20Plugin/badge.svg" alt="Build Status" />}[https://github.com/cat-in-136/redmine_hearts/actions]
-{<img src="https://img.shields.io/redmine/plugin/stars/hearts.svg" alt="Redmine Plugins" />}[https://www.redmine.org/plugins/redmine_hearts]
+{rdoc-image:https://github.com/cat-in-136/redmine_hearts/workflows/Redmine%20Plugin/badge.svg}[https://github.com/cat-in-136/redmine_hearts/actions]
+{rdoc-image:https://img.shields.io/badge/-redmine.org-B32024.svg?logo=redmine}[https://www.redmine.org/plugins/redmine_hearts]
 
 == How to install
 
