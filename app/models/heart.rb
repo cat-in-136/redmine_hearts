@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Heart < ActiveRecord::Base
-  unloadable
+  unloadable if respond_to?(:unloadable)
 
   belongs_to :heartable, :polymorphic => true
   belongs_to :user

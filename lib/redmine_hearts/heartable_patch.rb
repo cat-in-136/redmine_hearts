@@ -34,7 +34,7 @@ module RedmineHearts
       end
   
       base.class_eval do
-        unloadable
+        unloadable if respond_to?(:unloadable)
         acts_as_heartable options
       end
     end
