@@ -81,6 +81,13 @@ jobs:
         contents: |
           gem 'loofah', '~> 2.20.0'
       if: contains(fromJSON('["2.6 redmine/redmine@4.1.7", "2.6 redmine/redmine@4.0.9", "2.5 redmine/redmine@4.0.9"]'), matrix.mat_env)
+    - name: "'LoadError: cannot load such file -- blankslate' Issue HACK ref. https://www.redmine.org/issues/40802#note-11"
+      uses: DamianReeves/write-file-action@v1.2
+      with:
+        path: ./redmine/Gemfile.local
+        contents: |
+          gem 'builder', '~> 3.2.4'
+      if: contains(fromJSON('["3.2 redmica/redmica@v2.4.2", "3.2 redmica/redmica@v2.3.2", "3.1 redmica/redmica@v2.2.3", "3.0 redmica/redmica@v2.2.3", "2.7 redmica/redmica@v2.2.3", "2.6 redmine/redmine@4.1.7", "2.6 redmine/redmine@4.0.9", "2.5 redmine/redmine@4.0.9", "2.6 redmine/redmine@4.2.11", "2.7 redmine/redmine@4.2.11"]'), matrix.mat_env)
 
     - name: Before script
       run: |
