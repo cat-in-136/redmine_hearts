@@ -84,7 +84,6 @@ jobs:
 
     - name: Before script
       run: |
-        cd ./redmine
         bundle config --local path ${BUNDLE_PATH:-vendor/bundle}
         bundle install
         
@@ -97,31 +96,27 @@ jobs:
         
         # Execute plugin's migration
         bundle exec rake redmine:plugins NAME=${{ env.PLUGIN_NAME }}
+      working-directory: ./redmine
       env:
         REDMINE_LANG: en
         RAILS_ENV: test
 
     # HACK sometimes fails login error, so retry 10 times
-    # HACK use shell script file to avoid interruption by error
-    - name: Prepare test script
-      uses: DamianReeves/write-file-action@v1.2
-      with:
-        path: ./run_test.sh
-        contents: |
-          #!/bin/sh
-          cd ./redmine
-          for i in `seq 0 9`; do
-            # Execute plugin's test
-            bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
-            retval=$?
-            if [ "$retval" -eq 0 ]; then
-              break
-            fi
-            echo "${i}-th test failed; Retry test..."
-          done
-          exit $retval
     - name: Execute test
-      run: sh ./run_test.sh
+      run: |
+        #!/bin/sh
+        for i in `seq 0 9`; do
+          # Execute plugin's test
+          bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }}
+          retval=$?
+          if [ "$retval" -eq 0 ]; then
+            break
+          fi
+          echo "${i}-th test failed; Retry test..."
+        done
+        exit $retval
+      shell: bash {0}
+      working-directory: ./redmine
       env:
         REDMINE_LANG: en
         RAILS_ENV: test
