@@ -25,7 +25,8 @@ module RedmineHearts
       if subject
         controller.send(:render_to_string, {
           :partial => "hooks/redmine_hearts/view_layouts_base_html_head",
-          :locals => context.merge(:@heartable => subject)
+          :locals => context,
+          :assigns => { :heartable => subject }
         })
       end
     end
@@ -36,7 +37,8 @@ module RedmineHearts
       if subject
         controller.send(:render_to_string, {
           :partial => "hooks/redmine_hearts/view_layouts_base_content",
-          :locals => context.merge(:@heartable => subject)
+          :locals => context,
+          :assigns => { :heartable => subject }
         })
       end
     end
@@ -47,7 +49,8 @@ module RedmineHearts
         controller = context[:controller]
         controller.send(:render_to_string, {
           :partial => "hooks/redmine_hearts/view_account_left_bottom",
-          :locals => context.merge(:@heart_count => heart_count)
+          :locals => context,
+          :assigns => { :heart_count => heart_count }
         })
       end
     end
