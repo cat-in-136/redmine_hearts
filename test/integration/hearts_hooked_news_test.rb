@@ -31,8 +31,8 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
   def test_index
     get '/news/'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '.heart-link-with-count', :count => 2
     assert_select '#content .news-heart-holder .heart-link-with-count.news-2-heart', :count => 1
@@ -46,8 +46,8 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
 
     get '/news/1'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '#content > .heart-link-with-count.news-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.news-1-heart span.heart-count-number', :text => "0"
@@ -59,8 +59,8 @@ class HeartsHookedNewsTest < Redmine::IntegrationTest
 
     get '/news/1'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '#content > .heart-link-with-count.news-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.news-1-heart a.heart-count-number', :text => "1"

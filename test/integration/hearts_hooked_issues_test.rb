@@ -42,8 +42,8 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
   def test_index_shall_not_contain_hooks
     get '/projects/1/issues/'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 0
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 0
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 0
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 0
     assert_select '.heart-link-with-count', :count => 0
   end
 
@@ -58,8 +58,8 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
   def test_view
     get '/issues/1'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '#content > .heart-link-with-count.issue-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.issue-1-heart span.heart-count-number', :text => "0"
@@ -74,8 +74,8 @@ class HeartsHookedIssuesTest < Redmine::IntegrationTest
     log_user('dlopper', 'foo')
     get '/issues/2'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '#content > .heart-link-with-count.issue-2-heart', :count => 1
     assert_select '#content > .heart-link-with-count.issue-2-heart a.heart-count-number', :text => "2"
