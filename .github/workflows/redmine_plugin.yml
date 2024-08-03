@@ -43,11 +43,11 @@ jobs:
         ruby-version: ${{ env.RUBY_VERSION }}
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: ./${{ env.PLUGIN_NAME }}
     - name: Set up Redmine
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ env.REDMINE_REPOSITORY }}
         ref: ${{ env.REDMINE_REF }}
@@ -56,7 +56,7 @@ jobs:
     - name: Copy the plugin files to plugin directory
       run: cp -pr ./${{ env.PLUGIN_NAME }} ./redmine/plugins/${{ env.PLUGIN_NAME }}
     - name: Create redmine/config/database.yml
-      uses: DamianReeves/write-file-action@v1.2
+      uses: DamianReeves/write-file-action@v1.3
       with:
         path: ./redmine/config/database.yml
         contents: |
@@ -64,7 +64,7 @@ jobs:
             adapter: sqlite3
             database: db/redmine_test.db
 
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ./redmine/vendor/bundle
         key: ${{ runner.os }}-gems-${{ hashFiles('./redmine/**/Gemfile.lock') }}
@@ -72,7 +72,7 @@ jobs:
           ${{ runner.os }}-gems-
 
     - name: "'LoadError: cannot load such file -- blankslate' Issue HACK ref. https://www.redmine.org/issues/40802#note-11"
-      uses: DamianReeves/write-file-action@v1.2
+      uses: DamianReeves/write-file-action@v1.3
       with:
         path: ./redmine/Gemfile.local
         contents: |
