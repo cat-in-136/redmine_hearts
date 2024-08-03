@@ -98,5 +98,5 @@ module Redmine
   end
 end
 
-ActiveRecord::Base.send(:include, Redmine::Acts::Heartable)
+(defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base).send(:include, Redmine::Acts::Heartable)
 

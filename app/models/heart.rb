@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-class Heart < ActiveRecord::Base
+class Heart < (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base)
   unloadable if respond_to?(:unloadable)
 
   belongs_to :heartable, :polymorphic => true
@@ -33,7 +33,7 @@ class Heart < ActiveRecord::Base
     user = args.size > 0 ? args.shift : nil
     raise ArgumentError if args.size > 0
 
-    ActiveRecord::Base.subclasses.select { |klass|
+    (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base).subclasses.select { |klass|
       klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
     }.map { |klass|
       if user && klass.respond_to?(:visible)
@@ -57,7 +57,7 @@ class Heart < ActiveRecord::Base
   def self.notifications_to(user)
     raise ArgumentError unless user
 
-    ActiveRecord::Base.subclasses.select { |klass|
+    (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base).subclasses.select { |klass|
       klass.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
     }.select { |klass|
       klass.column_names.include?("author_id") || klass.column_names.include?("user_id")
