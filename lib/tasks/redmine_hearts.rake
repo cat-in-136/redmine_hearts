@@ -100,6 +100,7 @@ namespace :redmine_hearts do
           :user => user,
           :created_at => datetime,
           :updated_at => datetime,
+          :skip_validate_user => true,
         )
       end
     end
