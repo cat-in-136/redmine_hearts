@@ -88,7 +88,7 @@ namespace :redmine_hearts do
 
     num_of_heart_before_processing = Heart.count
 
-    VoteOnIssue.where('vote_val > 0').each do |vote|
+    VoteOnIssue.where('vote_val > 0').where.not(issue: nil, user: nil).each do |vote|
       issue = vote.issue
       user = vote.user
       datetime = vote.created_at || Time.now
