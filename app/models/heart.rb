@@ -24,9 +24,11 @@ class Heart < ActiveRecord::Base
   belongs_to :heartable, :polymorphic => true
   belongs_to :user
 
+  attribute :skip_validate_user, :boolean
+
   validates_presence_of :user
   validates_uniqueness_of :user_id, :scope => [:heartable_type, :heartable_id]
-  validate :validate_user
+  validate :validate_user, :unless => :skip_validate_user
 
   def self.of_projects(*args)
     projects = args.size > 0 ? args.shift : Project.none
