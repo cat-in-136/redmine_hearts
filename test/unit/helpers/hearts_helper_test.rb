@@ -49,7 +49,29 @@ class HeartsHelperTest < Redmine::HelperTest
     end
     assert_equal expected, heart_link_with_counter(Issue.find(1), User.find(1))
     assert_equal expected, heart_link_with_counter([Issue.find(1)], User.find(1))
-  end
+  end unless defined? IconsHelper # redmine < 6.0
+
+  test '#heart_link_with_counter with a non-hearted object' do
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          link_to(
+            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
+            :remote => true, :method => 'post', :class => "icon icon-heart-off"
+          ),
+          link_to(
+            "0",
+            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue', :only_path => true),
+            :class => "heart-count-number"
+          ),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.find(1))
+    assert_equal expected, heart_link_with_counter([Issue.find(1)], User.find(1))
+  end if defined? IconsHelper # redmine >= 6.0
 
   test '#heart_link_with_counter with a non-hearted object for anonymous user' do
     expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
@@ -64,7 +86,22 @@ class HeartsHelperTest < Redmine::HelperTest
       )
     end
     assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
-  end
+  end unless defined? IconsHelper # redmine < 6.0
+
+  test '#heart_link_with_counter with a non-hearted object for anonymous user' do
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          content_tag(:span,
+                      hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+                      :class => "icon icon-heart-off"),
+          content_tag(:span, "0", :class => "heart-count-number"),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
+  end if defined? IconsHelper # redmine >= 6.0
 
   test '#heart_link_with_counter with a multiple objets array' do
     expected = content_tag(:span, :class => "issue-bulk-heart heart-link-with-count") do
@@ -85,7 +122,28 @@ class HeartsHelperTest < Redmine::HelperTest
       )
     end
     assert_equal expected, heart_link_with_counter([Issue.find(1), Issue.find(3)], User.find(1))
-  end
+  end unless defined? IconsHelper # redmine < 6.0
+
+  test '#heart_link_with_counter with a multiple objets array' do
+    expected = content_tag(:span, :class => "issue-bulk-heart heart-link-with-count") do
+      safe_join(
+        [
+          link_to(
+            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            heart_url(:object_id => [1, 3], :object_type => 'issue', :only_path => true),
+            :remote => true, :method => 'post', :class => "icon icon-heart-off"
+          ),
+          link_to(
+            "0",
+            hearts_hearted_users_url(:object_id => [1, 3], :object_type => 'issue', :only_path => true),
+            :class => "heart-count-number"
+          ),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter([Issue.find(1), Issue.find(3)], User.find(1))
+  end if defined? IconsHelper # redmine >= 6.0
 
   def test_heart_link_with_counter_with_nil_should_return_empty_string
     assert_equal '', heart_link_with_counter(nil, User.find(1))
@@ -112,7 +170,30 @@ class HeartsHelperTest < Redmine::HelperTest
       )
     end
     assert_equal expected, heart_link_with_counter(Issue.find(1), User.find(1))
-  end
+  end unless defined? IconsHelper # redmine < 6.0
+
+  test '#heart_link_with_counter with a hearted object' do
+    Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
+
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          link_to(
+            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
+            :remote => true, :method => 'delete', :class => "icon icon-heart"
+          ),
+          link_to(
+            "1",
+            hearts_hearted_users_url(:object_id => 1, :object_type => 'issue', :only_path => true),
+            :class => "heart-count-number"
+          ),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.find(1))
+  end if defined? IconsHelper # redmine >= 6.0
 
   test '#heart_link_with_counter with a hearted object for anonymous user' do
     Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
@@ -129,7 +210,24 @@ class HeartsHelperTest < Redmine::HelperTest
       )
     end
     assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
-  end
+  end unless defined? IconsHelper # redmine < 6.0
+
+  test '#heart_link_with_counter with a hearted object for anonymous user' do
+    Heart.create!(:heartable => Issue.find(1), :user => User.find(1))
+
+    expected = content_tag(:span, :class => "issue-1-heart heart-link-with-count") do
+      safe_join(
+        [
+          content_tag(:span,
+                      hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+                      :class => "icon icon-heart-off"),
+          content_tag(:span, "1", :class => "heart-count-number"),
+        ],
+        ""
+      )
+    end
+    assert_equal expected, heart_link_with_counter(Issue.find(1), User.anonymous)
+  end if defined? IconsHelper # redmine >= 6.0
 
   test '#multiple_heart_links_with_counters with multiple objects' do
     queries = []
@@ -202,4 +300,10 @@ class HeartsHelperTest < Redmine::HelperTest
   test "#link_to_heartable_with_nil" do
     assert_raises { link_to_heartable(nil) }
   end
+
+  test "#hearts_icon_with_label" do
+    expected = sprite_icon('heart', size: 18, plugin: 'redmine_hearts') +
+      content_tag(:span, 'Like', class: 'icon-label')
+    assert_equal expected, hearts_icon_with_label('heart', 'Like')
+  end if defined? IconsHelper # redmine >= 6.0
 end
