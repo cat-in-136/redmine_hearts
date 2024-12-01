@@ -22,10 +22,12 @@ require File.expand_path('../lib/redmine_hearts/heartable_patch.rb', __FILE__)
 require File.expand_path('../lib/redmine_hearts/view_hook.rb', __FILE__)
 
 Redmine::Plugin.register :redmine_hearts do
+  requires_redmine :version_or_higher => '4.2.0'
+
   name 'Redmine Hearts plugin'
   author '@cat_in_136'
   description 'provide intra-Redmine Like/Fav reactions'
-  version '3.0.1'
+  version '4.0.0'
   url 'https://github.com/cat-in-136/redmine_hearts'
   author_url 'https://github.com/cat-in-136/'
 

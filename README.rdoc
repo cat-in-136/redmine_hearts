@@ -25,3 +25,10 @@ Follow below steps to migrate from other plugins :
   * Restart your redmine
 
 Ditto {issue_votes}[https://github.com/KohaSuomi/issue_votes]. Run <code>bundle exec rake -T redmine_hearts:migrate_from</code> to check the task name.
+
+== License
+
+* Codes: MIT License.
+* Legacy Icons: famfamfam-silk: {CC-By-2.5}[https://creativecommons.org/licenses/by/2.5/] by Mark James http://www.famfamfam.com/lab/icons/silk/
+* Vector Icons: {Tabler Icons}[https://tabler.io/]: MIT License
+
