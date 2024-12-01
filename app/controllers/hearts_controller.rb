@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 
 class HeartsController < ApplicationController
-  unloadable
+  unloadable if respond_to?(:unloadable)
 
   accept_api_auth :index, :heart, :unheart, :hearted_users
 

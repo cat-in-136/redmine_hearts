@@ -30,16 +30,16 @@ class HeartsHookedBoardsTest < Redmine::IntegrationTest
   def test_index_shall_not_contain_hooks
     get '/projects/1/boards/'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 0
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 0
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 0
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 0
     assert_select '.heart-link-with-count', :count => 0
   end
 
   def test_topic_view
     get '/boards/1/topics/1'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 1
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 1
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 1
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 1
 
     assert_select '#content > .heart-link-with-count.message-1-heart', :count => 1
     assert_select '#content > .heart-link-with-count.message-1-heart .heart-count-number', :text => "1"

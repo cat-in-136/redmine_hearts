@@ -30,8 +30,8 @@ class HeartsHookedUsersTest < Redmine::IntegrationTest
     log_user('dlopper', 'foo')
     get '/users/1'
     assert_response :success
-    assert_select 'script[src*="transplant_heart_link_with_counter.js"]', :count => 0
-    assert_select 'link[href*="redmine_hearts/stylesheets/application.css"]', :count => 0
+    assert_select 'script:match("src", ?)', /\/redmine_hearts\/.*transplant_heart_link_with_counter.*\.js/, :count => 0
+    assert_select 'link:match("href", ?)', /\/redmine_hearts\/.*application.*\.css/, :count => 0
     assert_select 'a[href="/hearts/hearted_by/1"]', :count => 1, :text => "2 Likes"
 
     Heart.where(:user_id => 1).destroy_all

@@ -1,8 +1,17 @@
 .icon-heart  { background-image: url(../images/heart.png); }
 .icon-heart-off  { background-image: url(../images/heart_off.png); }
-
 .heart-link-with-count { display: inline-block; }
-.heart-count-number { padding-left: 1ex; }
+.heart-count-number { padding-left: 0.75ex; }
+
+/* redmine >= 6.0 */
+:is(.icon-heart, .icon-heart-off):has(svg.icon-svg) { background-image: none; }
+.icon-heart .icon-svg { fill: #fb8098; stroke: none; }
+.heart-link-with-count:has(svg.icon-svg) { 
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
 
 @media screen and (max-width: 899px) {
   .heart-link-with-count > *:nth-child(1) {
