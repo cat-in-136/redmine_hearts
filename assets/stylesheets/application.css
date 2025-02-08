@@ -36,9 +36,17 @@
     border-radius: 3px;
   }
 
+  /* redmine < 6.0 */
   #history .journal .contextual .heart-link-with-count .heart-link-label,
   .message.reply .contextual .heart-link-with-count .heart-link-label,
   .news-article .contextual .heart-link-with-count .heart-link-label {
+    display: none;
+  }
+
+  /* redmine < 6.0 */
+  #history .journal .contextual .heart-link-with-count .icon > .icon-label,
+  .message.reply .contextual .heart-link-with-count .icon > .icon-label,
+  .news-article .contextual .heart-link-with-count .icon > .icon-label {
     display: none;
   }
 }

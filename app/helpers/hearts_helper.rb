@@ -53,8 +53,8 @@ module HeartsHelper
     objects = Array.wrap(objects)
 
     css = heart_bool ? 'icon icon-heart' : 'icon icon-heart-off'
-    if defined? hearts_icon_with_label # redmine >= 6.0
-      text = hearts_icon_with_label('heart', l(:hearts_link_label), css_class: 'heart-link-label')
+    if defined? sprite_icon # redmine >= 6.0
+      text = sprite_icon('heart', l(:hearts_link_label), plugin: 'redmine_hearts')
     else
       text = content_tag :span, l(:hearts_link_label), :class => 'heart-link-label'
     end
@@ -134,12 +134,6 @@ module HeartsHelper
 
   if defined? IconsHelper # redmine >= 6.0
     include IconsHelper
-    def hearts_icon_with_label(icon_name, label_text, icon_only: false, size: 18, css_class: nil)
-      label_classes = ["icon-label"]
-      label_classes << "hidden" if icon_only
-      plugin = 'redmine_hearts'
-      sprite_icon(icon_name, size: size, css_class: css_class, plugin: plugin) + content_tag(:span, label_text, class: label_classes.join(' '))
-    end
   end
 
 end

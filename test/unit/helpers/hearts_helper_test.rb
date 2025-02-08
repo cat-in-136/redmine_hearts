@@ -56,7 +56,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            sprite_icon('heart', 'Like', plugin: 'redmine_hearts'),
             heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
@@ -93,7 +93,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           content_tag(:span,
-                      hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+                      sprite_icon('heart', 'Like', plugin: 'redmine_hearts'),
                       :class => "icon icon-heart-off"),
           content_tag(:span, "0", :class => "heart-count-number"),
         ],
@@ -129,7 +129,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            sprite_icon('heart', 'Like', plugin: 'redmine_hearts'),
             heart_url(:object_id => [1, 3], :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'post', :class => "icon icon-heart-off"
           ),
@@ -179,7 +179,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           link_to(
-            hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+            sprite_icon('heart', 'Like', plugin: 'redmine_hearts'),
             heart_url(:object_id => 1, :object_type => 'issue', :only_path => true),
             :remote => true, :method => 'delete', :class => "icon icon-heart"
           ),
@@ -219,7 +219,7 @@ class HeartsHelperTest < Redmine::HelperTest
       safe_join(
         [
           content_tag(:span,
-                      hearts_icon_with_label('heart', 'Like', css_class: 'heart-link-label'),
+                      sprite_icon('heart', 'Like', plugin: 'redmine_hearts'),
                       :class => "icon icon-heart-off"),
           content_tag(:span, "1", :class => "heart-count-number"),
         ],
@@ -300,10 +300,4 @@ class HeartsHelperTest < Redmine::HelperTest
   test "#link_to_heartable_with_nil" do
     assert_raises { link_to_heartable(nil) }
   end
-
-  test "#hearts_icon_with_label" do
-    expected = sprite_icon('heart', size: 18, plugin: 'redmine_hearts') +
-      content_tag(:span, 'Like', class: 'icon-label')
-    assert_equal expected, hearts_icon_with_label('heart', 'Like')
-  end if defined? IconsHelper # redmine >= 6.0
 end
