@@ -98,5 +98,7 @@ module Redmine
   end
 end
 
-(defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base).send(:include, Redmine::Acts::Heartable)
+# Extend ApplicationRecord if Redmine > 6, ActiveRecord::Base if Redmine < 6.
+# https://www.redmine.org/issues/38975
+(Redmine::VERSION::MAJOR > 6 ? ApplicationRecord : ActiveRecord::Base).send(:include, Redmine::Acts::Heartable)
 
