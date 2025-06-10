@@ -1,0 +1,15 @@
+# Russian strings go here for Rails i19n
+ru:
+  recently_hearted_objects: Недавно понравившееся
+  recently_hearted_by: "Недавно понравилось %{author}"
+  recently_hearted_by_me: "Недавно мне понравилось"
+  including_hearted_myself: Включить то, что понравилось мне
+  label_hearted_days_to_html: "%{days} дней до %{date}"
+  label_hearted_time: "Понравилось %{age} назад"
+  label_hearted_time_by: "Понравилось %{author} %{age} назад"
+  hearts_link_label: Нравится
+  hearts_count_label:
+    zero: "Еще не понравилось"
+    one: "%{count} Нравится"
+    other: "%{count} Нравится"
+  hearts_notification_label: "Мои активности, которые недавно понравились"
