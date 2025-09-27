@@ -26,6 +26,27 @@ Follow below steps to migrate from other plugins :
 
 Ditto {issue_votes}[https://github.com/KohaSuomi/issue_votes]. Run <code>bundle exec rake -T redmine_hearts:migrate_from</code> to check the task name.
 
+== End of Life and Migration to Redmine 6.1+ Reactions
+
+Redmine Hearts will not be updated for Redmine versions 6.1 and above, as Redmine 6.1 introduces a built-in reaction feature. It is recommended to migrate to the built-in reaction feature if you are using Redmine 6.1 or newer.
+
+=== Migrating to Redmine's Built-in Reactions
+
+To migrate your existing hearts to Redmine's built-in reactions:
+
+* Run <code>bundle exec rake redmine_hearts:migrate_to_reactions RAILS_ENV=production</code>
+
+This task will convert all existing hearts to Redmine's built-in reactions. Hearts on unsupported reactable types will be skipped.
+
+=== Migrating from Redmine's Built-in Reactions to Redmine Hearts
+
+If you need to revert or migrate reactions back to Redmine Hearts (e.g., for Redmine versions older than 6.1), you can use the following task:
+
+* Run <code>bundle exec rake redmine_hearts:migrate_from_reactions RAILS_ENV=production</code>
+
+This task will convert all existing reactions to Redmine Hearts. Reactions on unsupported heartable types will be skipped.
+
+
 == License
 
 * Codes: MIT License.
