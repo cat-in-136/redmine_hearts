@@ -139,4 +139,95 @@ namespace :redmine_hearts do
     puts "#{num_of_vote_on_issue_added} #{(num_of_vote_on_issue_added > 1)? 'vote'.pluralize : 'vote'} added."
   end
 
+  desc "Migrate to redmine-builtin reactions from hearts"
+  task :migrate_to_reactions => :environment do
+    unless defined?(Reaction)
+      if Redmine::VERSION::MAJOR < 6 || (Redmine::VERSION::MAJOR == 6 && Redmine::VERSION::MINOR < 1)
+        abort "redmine-builtin reactions does not supported in Redmine version smaller than 6.1"
+      else
+        abort "Reaction does not exist"
+      end
+    end
+
+    num_of_reaction_before_processing = Reaction.count
+    num_of_skipped_heartable_due_to_unsupported = 0
+
+    Heart.all.each do |heart|
+      heartable = heart.heartable
+      user = heart.user
+      created_at = heart.created_at
+      updated_at = heart.updated_at
+
+      unless Redmine::Reaction::REACTABLE_TYPES.include?(heartable.class.name)
+        puts "Cannot convert: #{heartable.class.name} id:#{heartable.id} hearted by user:#{user.id}"
+        num_of_skipped_heartable_due_to_unsupported += 1
+        next
+      end
+
+      if Reaction.where(reactable: heartable, user: user).exists?
+        # do nothing if already reacted
+      else
+        Reaction.create!(
+          user: user,
+          reactable: heartable,
+          created_at: created_at,
+          updated_at: updated_at,
+        )
+      end
+    end
+
+    num_of_reaction_added = Reaction.count - num_of_reaction_before_processing
+
+    puts "#{num_of_reaction_added} #{(num_of_reaction_added > 1)? 'reaction'.pluralize : 'reaction'} added."
+    if num_of_skipped_heartable_due_to_unsupported > 0
+      puts "#{num_of_skipped_heartable_due_to_unsupported} #{(num_of_skipped_heartable_due_to_unsupported > 1)? 'heart'.pluralize : 'heart'} skipped due to unsupported in reaction."
+    end
+  end
+
+  desc "Migrate from redmine-builtin reactions to hearts"
+  task :migrate_from_reactions => :environment do
+    unless defined?(Reaction)
+      if Redmine::VERSION::MAJOR < 6 || (Redmine::VERSION::MAJOR == 6 && Redmine::VERSION::MINOR < 1)
+        abort "redmine-builtin reactions does not supported in Redmine version smaller than 6.1"
+      else
+        abort "Reaction does not exist"
+      end
+    end
+
+    num_of_heart_before_processing = Heart.count
+    num_of_skipped_reactable_due_to_unsupported = 0
+
+    Reaction.all.each do |reaction|
+      reactable = reaction.reactable
+      user = reaction.user
+      created_at = reaction.created_at
+      updated_at = reaction.updated_at
+
+      unless reactable.class.included_modules.include?(Redmine::Acts::Heartable::InstanceMethods)
+        puts "Cannot convert: #{reactable.class.name} id:#{reactable.id} reacted by user:#{user.id}"
+        num_of_skipped_reactable_due_to_unsupported += 1
+        next
+      end
+
+      if reactable.hearted_by?(user)
+        # do nothing if already hearted
+      else
+        Heart.create!(
+          :heartable => reactable,
+          :user => user,
+          :created_at => created_at,
+          :updated_at => updated_at,
+          :skip_validate_user => true,
+        )
+      end
+    end
+
+    num_of_heart_added = Heart.count - num_of_heart_before_processing
+
+    puts "#{num_of_heart_added} #{(num_of_heart_added > 1)? 'heart'.pluralize : 'heart'} added."
+    if num_of_skipped_reactable_due_to_unsupported > 0
+      puts "#{num_of_skipped_reactable_due_to_unsupported} #{(num_of_skipped_reactable_due_to_unsupported > 1)? 'reaction'.pluralize : 'reaction'} skipped due to unsupported in hearts."
+    end
+  end
+
 end
