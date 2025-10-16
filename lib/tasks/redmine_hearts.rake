@@ -153,6 +153,9 @@ namespace :redmine_hearts do
     num_of_skipped_heartable_due_to_unsupported = 0
 
     Heart.all.each do |heart|
+      # skip if reacted by deleted user
+      next unless heart.user
+
       heartable = heart.heartable
       user = heart.user
       created_at = heart.created_at
